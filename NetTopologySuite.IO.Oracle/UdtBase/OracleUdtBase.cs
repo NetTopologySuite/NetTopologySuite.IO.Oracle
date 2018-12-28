@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable 1591
+using System;
 using Oracle.DataAccess.Types;
 using Oracle.DataAccess.Client;
 
@@ -102,3 +103,4 @@ namespace NetTopologySuite.IO.UdtBase
         }
     }
 }
+#pragma warning restore 1591

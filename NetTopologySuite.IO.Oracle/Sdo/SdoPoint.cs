@@ -1,4 +1,5 @@
-﻿using NetTopologySuite.IO.UdtBase;
+﻿#pragma warning disable 1591
+using NetTopologySuite.IO.UdtBase;
 using Oracle.DataAccess.Types;
 
 namespace NetTopologySuite.IO.Sdo
@@ -41,3 +42,4 @@ namespace NetTopologySuite.IO.Sdo
         }
     }
 }
+#pragma warning restore 1591
