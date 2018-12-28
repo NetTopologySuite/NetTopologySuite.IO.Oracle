@@ -553,7 +553,7 @@ namespace NetTopologySuite.IO
         {
             var pts = new List<Coordinate>(input.Count);
             foreach (Coordinate point in input)
-                pts.Add(new Coordinate(point.X, point.Y, point.Y));
+                pts.Add(new Coordinate(point.X, point.Y, point.Z));
 
             return pts.ToArray();
         }
