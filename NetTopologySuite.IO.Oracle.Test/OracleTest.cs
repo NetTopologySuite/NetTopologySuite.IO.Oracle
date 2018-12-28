@@ -21,13 +21,13 @@ namespace NetTopologySuite.IO.Oracle.Test
                 "MULTIPOINT(11 12 12, 20 20 20)",
                 "LINESTRING(10 10,20 20,50 50,34 34)",
                 "LINESTRING(10 10 20,20 20 20,50 50 50,34 34 34)",
-                "POLYGON((10 10,20 10,20 20,20 10,10 10))",
-                "POLYGON((10 10,20 10,20 20,20 10,10 10),(5 5,5 6,6 6,6 5,5 5))",
-                "POLYGON((10 10 0,20 10 0,20 20 0,20 10 0,10 10 0),(5 5 0,5 6 0,6 6 0,6 5 0,5 5 0))",
+                "POLYGON((10 10,20 10,20 20,10 20,10 10))",
+                "POLYGON((10 10,20 10,20 20,10 20,10 10),(5 5,5 6,6 6,6 5,5 5))",
+                "POLYGON((10 10 0,20 10 0,20 20 0,10 20 0,10 10 0),(5 5 0,5 6 0,6 6 0,6 5 0,5 5 0))",
                 "MULTIPOLYGON(((10 10,20 10,20 20,20 10,10 10)),((10 10,20 10,20 20,20 10,10 10)))",
-                "MULTIPOLYGON(((10 10,20 10,20 20,20 10,10 10),(5 5,5 6,6 6,6 5,5 5)),((10 10,20 10,20 20,20 10,10 10)))",
-                "MULTIPOLYGON(((10 10,20 10,20 20,20 10,10 10),(5 5,5 6,6 6,6 5,5 5)),((10 10,20 10,20 20,20 10,10 10),(5 5,5 6,6 6,6 5,5 5)))",
-                "MULTIPOLYGON(((10 10 0,20 10 0,20 20 0,20 10 0,10 10 0),(5 5 0,5 6 0,6 6 0,6 5 0,5 5 0)),((10 10 0,20 10 0,20 20 0,20 10 0,10 10 0),(5 5 0,5 6 0,6 6 0,6 5 0,5 5 0)))",
+                "MULTIPOLYGON(((10 10,20 10,20 20,10 20,10 10),(5 5,5 6,6 6,6 5,5 5)),((10 10,20 10,20 20,20 10,10 10)))",
+                "MULTIPOLYGON(((10 10,20 10,20 20,10 20,10 10),(5 5,5 6,6 6,6 5,5 5)),((10 10,20 10,20 20,20 10,10 10),(5 5,5 6,6 6,6 5,5 5)))",
+                "MULTIPOLYGON(((10 10 0,20 10 0,20 20 0,10 20 0,10 10 0),(5 5 0,5 6 0,6 6 0,6 5 0,5 5 0)),((10 10 0,20 10 0,20 20 0,20 10 0,10 10 0),(5 5 0,5 6 0,6 6 0,6 5 0,5 5 0)))",
                 "MULTILINESTRING((10 10,20 10,20 20,20 10),(5 5,5 6,6 6,6 5))",
                 "MULTILINESTRING((10 10 5,20 10 5,20 20 0,20 10 0,10 10 0),(5 5 0,5 6 0,6 6 0,6 5 0,5 5 0))",
         };
@@ -38,13 +38,27 @@ namespace NetTopologySuite.IO.Oracle.Test
         private static readonly WKTReader wr = new WKTReader();
 
         [Test]
-        public void General()
+        public void BasicConversion()
         {
             for (var i = 0; i < testSet.Length; i++)
             {
                 General(testSet[i], -1);
                 General(testSet[i], SRID);
             }
+        }
+
+        [Test]
+        public void CCWTestsOnPolygon()
+        {
+            var wrongCCW = "POLYGON((10 10, 10 20, 20 20, 20 10, 10 10),(5 5,6 5,6 6,5 6,5 5))";
+            var correctCCW = "POLYGON((10 10, 20 10, 20 20, 10 20, 10 10),(5 5,5 6,6 6,6 5,5 5))";
+
+            var geom1 = wr.Read(wrongCCW);
+            var geom2 = wr.Read(correctCCW);
+
+            var t = new OracleGeometryWriter().Write(geom1);
+            var geom3 = or.Read(t);
+            Assert.IsTrue(geom2.EqualsExact(geom3));
         }
 
         private static void General(string wkt, int srid)

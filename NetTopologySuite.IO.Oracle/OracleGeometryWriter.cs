@@ -144,13 +144,21 @@ namespace NetTopologySuite.IO
         private int ProcessPolygon(IPolygon polygon, List<decimal> elemInfoList, List<decimal> ordinateList, int pos)
         {
             elemInfoList.AddRange(new List<decimal>() { pos, 1003, 1 });
-            var exteriorOrdinates = GetOrdinates(polygon.ExteriorRing);
+            var exteriorCoords = polygon.ExteriorRing.Coordinates;
+            if (!Algorithm.Orientation.IsCCW(exteriorCoords)) {
+                Array.Reverse(exteriorCoords);
+            }
+            var exteriorOrdinates = GetOrdinates(exteriorCoords);
             ordinateList.AddRange(exteriorOrdinates);
             pos += exteriorOrdinates.Count;
             foreach (var ring in polygon.InteriorRings)
             {
                 elemInfoList.AddRange(new List<decimal>() { pos, 2003, 1 });
-                var interiorOrdinates = GetOrdinates(ring);
+                var interiorCoords = ring.Coordinates;
+                if (Algorithm.Orientation.IsCCW(interiorCoords)) {
+                    Array.Reverse(interiorCoords);
+                }
+                var interiorOrdinates = GetOrdinates(interiorCoords);
                 ordinateList.AddRange(interiorOrdinates);
                 pos += interiorOrdinates.Count;
             }
@@ -237,6 +245,21 @@ namespace NetTopologySuite.IO
                 ords.Add((decimal)lineString.GetCoordinateN(i).Y);
                 if (Dimension(lineString) == 3)
                     ords.Add((decimal)lineString.GetCoordinateN(i).Z);
+            }
+
+            return ords;
+        }
+
+        private List<decimal> GetOrdinates(Coordinate[] coords)
+        {
+            var ords = new List<decimal>();
+            var numOfPoints = coords.Length;
+            for (var i = 0; i < numOfPoints; i++)
+            {
+                ords.Add((decimal)coords[i].X);
+                ords.Add((decimal)coords[i].Y);
+                if (!Double.IsNaN(coords[i].Z))
+                    ords.Add((decimal)coords[i].Z);
             }
 
             return ords;
