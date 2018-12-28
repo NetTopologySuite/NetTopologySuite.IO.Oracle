@@ -24,12 +24,6 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="Release\AnyCPU\net40-client\NetTopologySuite.IO.Oracle.dll" target="lib\net40-client" />
-		<file src="Release\AnyCPU\net40-client\NetTopologySuite.IO.Oracle.pdb" target="lib\net40-client" />
-		<file src="Release\AnyCPU\net40-client\NetTopologySuite.IO.Oracle.xml" target="lib\net40-client" />
-    <file src="Release\AnyCPU\net35-client\NetTopologySuite.IO.Oracle.dll" target="lib\net35-client" />
-    <file src="Release\AnyCPU\net35-client\NetTopologySuite.IO.Oracle.pdb" target="lib\net35-client" />
-    <file src="Release\AnyCPU\net35-client\NetTopologySuite.IO.Oracle.xml" target="lib\net35-client" />
     <file src="Release\AnyCPU\net45\NetTopologySuite.IO.Oracle.dll" target="lib\net45" />
     <file src="Release\AnyCPU\net45\NetTopologySuite.IO.Oracle.pdb" target="lib\net45" />
     <file src="Release\AnyCPU\net45\NetTopologySuite.IO.Oracle.xml" target="lib\net45" />
