@@ -8,7 +8,7 @@
     <DelaySign>false</DelaySign>
   </PropertyGroup>
 
-  <Import Project="$(SolutionDir)NetTopologySuite.Common.props" />
+  <Import Project="$(SolutionDir)\NetTopologySuite.Common.props" />
 
   <ItemGroup Condition=" '$(RequiresFrameworkAssemblyReferences)' == 'true' ">
     <Reference Include="Oracle.DataAccess">
