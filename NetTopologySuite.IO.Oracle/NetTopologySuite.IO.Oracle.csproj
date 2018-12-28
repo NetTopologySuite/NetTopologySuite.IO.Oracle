@@ -1,8 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$(ProjectDir)..\..\</SolutionDir>
-    <TargetFramework>net40-client</TargetFramework>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$(ProjectDir)..\</SolutionDir>
+    <TargetFrameworks>net35-client;net40-client;net45</TargetFrameworks>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(SolutionDir)nts.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
   </PropertyGroup>
 
   <Import Project="$(SolutionDir)NetTopologySuite.Common.props" />
@@ -22,7 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="GeoAPI" Version="1.7.5" />
-    <PackageReference Include="NetTopologySuite" Version="1.15.1" />
+    <PackageReference Include="NetTopologySuite.Core" Version="1.15.1" />
     <PackageReference Include="odp.net.x86" Version="112.3.20" />
   </ItemGroup>
 </Project>

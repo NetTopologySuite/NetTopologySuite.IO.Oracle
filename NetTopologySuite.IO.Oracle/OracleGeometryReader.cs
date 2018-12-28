@@ -393,7 +393,7 @@ namespace NetTopologySuite.IO
             int start = (sOffset - 1)/len;
             int end = start + interpretation;
 
-            var points = _factory.CreateMultiPoint(SubArray(coords, start, end));
+            var points = _factory.CreateMultiPointFromCoords(SubArray(coords, start, end));
 
             return points;
         }
