@@ -9,6 +9,8 @@
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
       None
     </ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Holger Laebe</Authors>
   </PropertyGroup>
 
   <Import Project="$(SolutionDir)\NetTopologySuite.Common.props" />

@@ -11,9 +11,9 @@ using System.Runtime.InteropServices;
 #else
 [assembly: AssemblyConfiguration("Stable")]
 #endif
-[assembly: AssemblyCompany("NetTopologySuite - Team")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("NetTopologySuite.IO.Oracle")]
-[assembly: AssemblyCopyright("Copyright © 2011")]
+[assembly: AssemblyCopyright("Copyright © 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 // Durch Festlegen von ComVisible auf "false" werden die Typen in dieser Assembly unsichtbar 

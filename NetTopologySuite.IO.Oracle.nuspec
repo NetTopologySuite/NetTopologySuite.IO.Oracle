@@ -6,7 +6,7 @@
 		<title>NTS - Topology Suite - IO Library for Oracle</title>
 		<authors>Holger Laebe</authors>
 		<owners>Holger Laebe</owners>
-		<licenseUrl>http://www.gnu.org/licenses/lgpl.html</licenseUrl>
+		<license type="file">license.txt</license>
 		<projectUrl>https://github.com/hlaebe/NetTopologySuite.IO.Oracle</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>
@@ -27,5 +27,6 @@
     <file src="Release\AnyCPU\net45\NetTopologySuite.IO.Oracle.dll" target="lib\net45" />
     <file src="Release\AnyCPU\net45\NetTopologySuite.IO.Oracle.pdb" target="lib\net45" />
     <file src="Release\AnyCPU\net45\NetTopologySuite.IO.Oracle.xml" target="lib\net45" />
+	<file src="license\license.txt" target="" />
 	</files>
 </package>
