@@ -5,6 +5,9 @@
     <TargetFrameworks>net45</TargetFrameworks>
     <SignAssembly>false</SignAssembly>
     <IsTestProject>true</IsTestProject>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+      None
+    </ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
 
   <Import Project="$(SolutionDir)NetTopologySuite.Common.props" />
