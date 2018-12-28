@@ -4,7 +4,6 @@ using System.Diagnostics;
 using GeoAPI.Geometries;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Sdo;
-using NetTopologySuite.IO.UdtBase;
 
 namespace NetTopologySuite.IO
 {
