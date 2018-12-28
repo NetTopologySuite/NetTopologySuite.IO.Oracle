@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>NetTopologySuite.IO.Oracle</id>
+		<version>1.15.0.0</version>
+		<title>NTS - Topology Suite - IO Library for Oracle</title>
+		<authors>Holger Laebe</authors>
+		<owners>Holger Laebe</owners>
+		<licenseUrl>http://www.gnu.org/licenses/lgpl.html</licenseUrl>
+		<projectUrl>https://github.com/hlaebe/NetTopologySuite.IO.Oracle</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>
+      This package contains the Oracle IO library with experimental writer implementation
+		</description>
+		<summary>Oracle IO library for NetTopologySuite</summary>
+		<tags>NTS Oracle</tags>
+		<language>en-US</language>
+		<frameworkAssemblies>
+			<frameworkAssembly assemblyName="System" targetFramework="" />
+			<frameworkAssembly assemblyName="System.Core" targetFramework="" />
+		</frameworkAssemblies>
+		<dependencies>
+			<dependency id="NetTopologySuite" version="[1.15.1.0]" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="Release\v4.5\AnyCPU\NetTopologySuite.IO.Oracle.dll" target="lib\net45" />
+		<file src="Release\v4.5\AnyCPU\NetTopologySuite.IO.Oracle.pdb" target="lib\net45" />
+		<file src="Release\v4.5\AnyCPU\NetTopologySuite.IO.Oracle.xml" target="lib\net45" />
+	</files>
+</package>
