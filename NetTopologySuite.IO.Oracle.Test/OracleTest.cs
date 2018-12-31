@@ -36,7 +36,7 @@ namespace NetTopologySuite.IO.Oracle.Test
         }
 
         /// <summary>
-        /// 
+        /// Tests all geometry types by transforming from wkt to oracle and back
         /// </summary>
         /// <param name="wkt"></param>
         /// <param name="srid"></param>
@@ -57,6 +57,11 @@ namespace NetTopologySuite.IO.Oracle.Test
         [TestCase("MULTIPOLYGON(((10 10 0,20 10 0,20 20 0,10 20 0,10 10 0),(5 5 0,5 6 0,6 6 0,6 5 0,5 5 0)),((10 10 0,20 10 0,20 20 0,20 10 0,10 10 0),(5 5 0,5 6 0,6 6 0,6 5 0,5 5 0)))", -1)]
         [TestCase("MULTILINESTRING((10 10,20 10,20 20,20 10),(5 5,5 6,6 6,6 5))", -1)]
         [TestCase("MULTILINESTRING((10 10 5,20 10 5,20 20 0,20 10 0,10 10 0),(5 5 0,5 6 0,6 6 0,6 5 0,5 5 0))", -1)]
+        [TestCase("GEOMETRYCOLLECTION(POLYGON((10 10,20 10,20 20,10 20,10 10)),POLYGON((30 10,40 10,40 20,30 20,30 10)))", -1)]
+        [TestCase("GEOMETRYCOLLECTION(POLYGON((10 10,20 10,20 20,10 20,10 10),(5 5,5 6,6 6,6 5,5 5)))", -1)]
+        [TestCase("GEOMETRYCOLLECTION(POLYGON((10 10,20 10,20 20,10 20,10 10),(5 5,5 6,6 6,6 5,5 5)),LINESTRING(10 10,20 20,50 50,34 34))", -1)]
+        [TestCase("GEOMETRYCOLLECTION(POINT(10 10),LINESTRING(10 10,20 20,50 50,34 34))", -1)]
+        [TestCase("GEOMETRYCOLLECTION(POINT(10 10),MULTIPOINT(11 12, 20 20))", -1)]        
         public void BasicConversion(string wkt, int srid)
         {
             var geom = wr.Read(wkt);
@@ -73,7 +78,29 @@ namespace NetTopologySuite.IO.Oracle.Test
             var t = new OracleGeometryWriter().Write(regeom);
             var regeom3 = or.Read(t);
             Assert.IsTrue(geom.EqualsExact(regeom3));
-
         }
+
+        /// <summary>
+        /// Tests geometry collection with multitypes 
+        /// </summary>
+        /// <param name="wkt"></param>
+        /// <param name="wktresult"></param>
+        /// <param name="srid"></param>
+        [TestCase("GEOMETRYCOLLECTION(MULTIPOINT(11 12, 20 20))", "GEOMETRYCOLLECTION(MULTIPOINT(11 12, 20 20))", - 1)]
+        [TestCase("GEOMETRYCOLLECTION(MULTIPOLYGON(((10 10,20 10,20 20,10 20,10 10),(5 5,5 6,6 6,6 5,5 5)),((10 10,20 10,20 20,20 10,10 10),(5 5,5 6,6 6,6 5,5 5))))", "GEOMETRYCOLLECTION(POLYGON((10 10,20 10,20 20,10 20,10 10),(5 5,5 6,6 6,6 5,5 5)),POLYGON((10 10,20 10,20 20,20 10,10 10),(5 5,5 6,6 6,6 5,5 5)))", - 1)]
+        [TestCase("GEOMETRYCOLLECTION(MULTILINESTRING((10 10,20 10,20 20,10 20,10 10),(5 5,5 6,6 6,6 5,5 5)))", "GEOMETRYCOLLECTION(LINESTRING(10 10,20 10,20 20,10 20,10 10),LINESTRING(5 5,5 6,6 6,6 5,5 5))", -1)]
+        public void CollectionConversion(string wkt, string wktresult, int srid)
+        {
+            var geom = wr.Read(wkt);
+            var result = wr.Read(wktresult);
+
+            geom.SRID = srid;
+            result.SRID = srid;
+
+            var t = new OracleGeometryWriter().Write(geom);
+            var regeom = or.Read(t);
+            Assert.IsTrue(result.EqualsExact(regeom));
+        }
+
     }
 }

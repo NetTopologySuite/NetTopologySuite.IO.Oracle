@@ -265,8 +265,8 @@ namespace NetTopologySuite.IO
                                                  " not representable as a JTS Geometry." +
                                                  "(Custom and Compound Straight and Curved Geometries not supported)");
                 }
-
-                list.Add(geom);
+                if (cont)
+                    list.Add(geom);
             }
 
             var geoms = _factory.CreateGeometryCollection(list.ToArray());

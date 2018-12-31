@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<package xmlns="https://raw.githubusercontent.com/NuGet/NuGet.Client/dev/src/NuGet.Core/NuGet.Packaging/compiler/resources/nuspec.xsd">
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>NetTopologySuite.IO.Oracle</id>
-		<version>1.15.0.0</version>
+		<version>1.15.1.0</version>
 		<title>NetTopologySuite IO Library for Oracle</title>
 		<authors>Holger Laebe</authors>    
 		<license type="expression">LGPL-2.1-or-later</license>
