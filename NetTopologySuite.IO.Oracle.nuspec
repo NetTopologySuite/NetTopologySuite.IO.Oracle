@@ -19,7 +19,7 @@
 			<frameworkAssembly assemblyName="System.Core" targetFramework="" />
 		</frameworkAssemblies>
 		<dependencies>
-			<dependency id="NetTopologySuite" version="[1.15.1.0]" />
+			<dependency id="NetTopologySuite" version="[1.15.1,2.0]" />
 		</dependencies>
 	</metadata>
 	<files>
