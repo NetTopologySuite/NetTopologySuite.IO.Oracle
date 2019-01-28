@@ -4,7 +4,7 @@
 		<id>NetTopologySuite.IO.Oracle</id>
 		<version>1.15.1.0</version>
 		<title>NetTopologySuite IO Library for Oracle</title>
-		<authors>Holger Laebe</authors>    
+		<authors>NetTopology Team</authors>    
 		<license type="expression">LGPL-2.1-or-later</license>
 		<projectUrl>https://github.com/hlaebe/NetTopologySuite.IO.Oracle</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
