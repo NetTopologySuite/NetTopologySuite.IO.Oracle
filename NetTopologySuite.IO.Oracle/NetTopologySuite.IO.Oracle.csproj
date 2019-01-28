@@ -8,9 +8,8 @@
     <DelaySign>false</DelaySign>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
       None
-    </ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Authors>Holger Laebe</Authors>
+    </ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>    
+    <Authors>NetTopologySuite Team</Authors>
   </PropertyGroup>
 
   <Import Project="$(SolutionDir)\NetTopologySuite.Common.props" />
