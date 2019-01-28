@@ -2,11 +2,11 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>NetTopologySuite.IO.Oracle</id>
-		<version>1.15.1.0</version>
+		<version>$version$</version>
 		<title>NetTopologySuite IO Library for Oracle</title>
 		<authors>NetTopology Team</authors>    
 		<license type="expression">BSD-3-Clause</license>
-		<projectUrl>https://github.com/hlaebe/NetTopologySuite.IO.Oracle</projectUrl>
+		<projectUrl>https://github.com/NetTopologySuite/NetTopologySuite.IO.Oracle</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>
       This package contains the Oracle IO library with experimental writer implementation
