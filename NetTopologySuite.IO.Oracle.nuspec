@@ -5,7 +5,7 @@
 		<version>1.15.1.0</version>
 		<title>NetTopologySuite IO Library for Oracle</title>
 		<authors>NetTopology Team</authors>    
-		<license type="expression">LGPL-2.1-or-later</license>
+		<license type="expression">BSD-3-Clause</license>
 		<projectUrl>https://github.com/hlaebe/NetTopologySuite.IO.Oracle</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>
