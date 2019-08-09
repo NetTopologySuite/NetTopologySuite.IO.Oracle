@@ -6,11 +6,15 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B0923F22-AF00-46DA-B5CE-73F4D398DE37}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		NetTopologySuite.Common.props = NetTopologySuite.Common.props
+		NetTopologySuite.IO.Oracle.nuspec = NetTopologySuite.IO.Oracle.nuspec
 		README.md = README.md
 		SharedAssemblyVersion.cs = SharedAssemblyVersion.cs
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetTopologySuite.IO.Oracle", "NetTopologySuite.IO.Oracle\NetTopologySuite.IO.Oracle.csproj", "{8B9632C4-9854-497E-A077-A1B7F358E284}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetTopologySuite.IO.Oracle.Test", "NetTopologySuite.IO.Oracle.Test\NetTopologySuite.IO.Oracle.Test.csproj", "{58CEBBBB-3E65-4DEC-A344-9D4E32E518DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,6 +26,10 @@ Global
 		{8B9632C4-9854-497E-A077-A1B7F358E284}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B9632C4-9854-497E-A077-A1B7F358E284}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B9632C4-9854-497E-A077-A1B7F358E284}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58CEBBBB-3E65-4DEC-A344-9D4E32E518DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58CEBBBB-3E65-4DEC-A344-9D4E32E518DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58CEBBBB-3E65-4DEC-A344-9D4E32E518DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58CEBBBB-3E65-4DEC-A344-9D4E32E518DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

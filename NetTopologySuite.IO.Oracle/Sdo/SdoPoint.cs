@@ -3,36 +3,25 @@ using Oracle.DataAccess.Types;
 
 namespace NetTopologySuite.IO.Sdo
 {
-    [OracleCustomTypeMappingAttribute("MDSYS.SDO_POINT_TYPE")]
+    [OracleCustomTypeMapping("MDSYS.SDO_POINT_TYPE")]
     public class SdoPoint : OracleCustomTypeBase<SdoPoint>
     {
-        private decimal? _x;
-        private decimal? _y;
-        private decimal? _z;
-        [OracleObjectMappingAttribute("X")]
-        public decimal? X
-        {
-            get { return _x; }
-            set { _x = value; }
-        }
-        [OracleObjectMappingAttribute("Y")]
-        public decimal? Y
-        {
-            get { return _y; }
-            set { _y = value; }
-        }
+        [OracleObjectMapping("X")]
+        public decimal? X { get; set; }
+
+        [OracleObjectMapping("Y")]
+        public decimal? Y { get; set; }
+
         [OracleObjectMapping("Z")]
-        public decimal? Z
-        {
-            get { return _z; }
-            set { _z = value; }
-        }
+        public decimal? Z { get; set; }
+
         public override void MapFromCustomObject()
         {
-            SetValue("X", _x);
-            SetValue("Y", _y);
-            SetValue("Z", _z);
+            SetValue("X", X);
+            SetValue("Y", Y);
+            SetValue("Z", Z);
         }
+
         public override void MapToCustomObject()
         {
             X = GetValue<decimal?>("X");

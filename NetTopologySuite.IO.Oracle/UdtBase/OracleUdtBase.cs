@@ -8,7 +8,7 @@ namespace NetTopologySuite.IO.UdtBase
         where T : OracleCustomTypeBase<T>, new()
     {
         private static readonly string ErrorMessageHead = "Error converting Oracle User Defined Type to .Net Type " +
-                                                          typeof (T) +
+                                                          typeof(T) +
                                                           ", oracle column is null, failed to map to . NET valuetype, column ";
 
         private OracleConnection _connection;
@@ -16,24 +16,11 @@ namespace NetTopologySuite.IO.UdtBase
 
         private bool _isNull;
 
-        public virtual bool IsNull
-        {
-            get { return _isNull; }
-        }
+        public virtual bool IsNull => _isNull;
 
-        public static T Null
-        {
-            get
-            {
-                T t = new T {_isNull = true};
-                return t;
-            }
-        }
+        public static T Null => new T { _isNull = true };
 
-        public IOracleCustomType CreateObject()
-        {
-            return new T();
-        }
+        public IOracleCustomType CreateObject() => new T();
 
         protected void SetConnectionAndPointer(OracleConnection connection, IntPtr pUdt)
         {
@@ -74,16 +61,17 @@ namespace NetTopologySuite.IO.UdtBase
 
         protected TUser GetValue<TUser>(string oracleColumnName)
         {
-
             if (OracleUdt.IsDBNull(_connection, _pUdt, oracleColumnName))
             {
-                if (default(TUser) is ValueType)
+                if (default(TUser) != null)
                 {
                     throw new Exception(ErrorMessageHead + oracleColumnName + " of value type " +
                                         typeof(TUser));
                 }
+
                 return default(TUser);
             }
+
             return (TUser)OracleUdt.GetValue(_connection, _pUdt, oracleColumnName);
         }
 
@@ -91,13 +79,15 @@ namespace NetTopologySuite.IO.UdtBase
         {
             if (OracleUdt.IsDBNull(_connection, _pUdt, oracleColumnId))
             {
-                if (default(TUser) is ValueType)
+                if (default(TUser) != null)
                 {
                     throw new Exception(ErrorMessageHead + oracleColumnId.ToString() + " of value type " +
                                         typeof(TUser));
                 }
+
                 return default(TUser);
             }
+
             return (TUser)OracleUdt.GetValue(_connection, _pUdt, oracleColumnId);
         }
     }

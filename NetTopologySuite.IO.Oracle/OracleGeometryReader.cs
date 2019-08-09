@@ -4,18 +4,16 @@ using System.Diagnostics;
 using GeoAPI.Geometries;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Sdo;
-using NetTopologySuite.IO.UdtBase;
 
 namespace NetTopologySuite.IO
 {
     public class OracleGeometryReader
     {
         private const int NullDimension = -1;
-        private const int SridNull = -1;
 
         public OracleGeometryReader()
-            :this(GeometryFactory.Default)
-        {}
+            : this(GeometryFactory.Default)
+        { }
 
         public OracleGeometryReader(IGeometryFactory factory)
         {
@@ -24,13 +22,7 @@ namespace NetTopologySuite.IO
 
         private readonly IGeometryFactory _factory;
 
-        private int _dimension = -1;
-
-        public int Dimension
-        {
-            get { return _dimension; }
-            set { _dimension = value; }
-        }
+        public int Dimension { get; set; } = -1;
 
 
         public IGeometry Read(SdoGeometry geom)
@@ -39,34 +31,34 @@ namespace NetTopologySuite.IO
             //Note: Returning null for null Datum
             if (geom == null)
                 return null;
-            
+
             Debug.Assert(geom.SdoGtype.HasValue);
-            var gType = (int) geom.SdoGtype;
-            
+            var gType = (int)geom.SdoGtype;
+
             Debug.Assert(geom.Sdo_Srid.HasValue);
             var srid = (int)geom.Sdo_Srid;
-            
+
             var point = geom.Point;
-            
+
             var retVal = Create(gType, point, geom.ElemArray, geom.OrdinatesArray);
             retVal.SRID = srid;
-            
+
             return retVal;
         }
 
         private IGeometry Create(int gType, SdoPoint point, Decimal[] elemInfo, Decimal[] ordinates)
         {
-            int lrs = (gType%1000)/100;
+            int lrs = (gType % 1000) / 100;
 
             // find the dimension: represented by the smaller of the two dimensions
             int dim;
-            if (_dimension != NullDimension)
+            if (Dimension != NullDimension)
             {
-                dim = _dimension;
+                dim = Dimension;
             }
             else
             {
-                dim = Math.Min(gType/1000, 3);
+                dim = Math.Min(gType / 1000, 3);
             }
 
             if (dim == 0)
@@ -80,7 +72,7 @@ namespace NetTopologySuite.IO
 
             // extract the geometry template type
             // this is represented as the rightmost two digits
-            int geomTemplate = gType - (dim*1000) - (lrs*100);
+            int geomTemplate = gType - (dim * 1000) - (lrs * 100);
 
             //CoordinateSequence coords = null;
             List<Coordinate> coords;
@@ -98,16 +90,16 @@ namespace NetTopologySuite.IO
                 {
                     Debug.Assert(point.Z != null, "point.Z != null");
                     coords = Coordinates(dim, lrs, geomTemplate,
-                                         new[] {point.X.Value, point.Y.Value, point.Z.Value});
+                                         new[] { point.X.Value, point.Y.Value, point.Z.Value });
                 }
-                elemInfo = new Decimal[] {1, (Int32) SdoEType.Coordinate, 1};
+                elemInfo = new Decimal[] { 1, (Int32)SdoEType.Coordinate, 1 };
             }
             else
             {
                 coords = Coordinates(dim, lrs, geomTemplate, ordinates);
             }
 
-            switch ((SdoGTemplate) geomTemplate)
+            switch ((SdoGTemplate)geomTemplate)
             {
                 case SdoGTemplate.Coordinate:
                     return CreatePoint(dim, lrs, elemInfo, 0, coords);
@@ -157,7 +149,7 @@ namespace NetTopologySuite.IO
 
             int len = dim + lrs;
 
-            if ((len == 0 && ordinates.Length != 0) || (len != 0 && ((ordinates.Length%len) != 0)))
+            if ((len == 0 && ordinates.Length != 0) || (len != 0 && ((ordinates.Length % len) != 0)))
             {
                 throw new ArgumentException("Dimension D:" + dim + " and L:" +
                                          lrs + " denote Coordinates " + "of " + len +
@@ -165,23 +157,23 @@ namespace NetTopologySuite.IO
                                          "an ordinate array of length " + ordinates.Length);
             }
 
-            int length = (len == 0 ? 0 : ordinates.Length/len);
+            int length = (len == 0 ? 0 : ordinates.Length / len);
 
             // we would have to ask for a dimension which represents all the requested
             // dimension and measures from a mask array in the future
-           var pts = new List<Coordinate>(length);
+            var pts = new List<Coordinate>(length);
 
             for (int i = 0; i < length; i++)
             {
-                int offset = i*len;
+                int offset = i * len;
                 switch (len)
                 {
                     case 2:
-                        pts.Add(new Coordinate((Double) ordinates[offset], (Double) ordinates[offset + 1], Double.NaN));
+                        pts.Add(new Coordinate((Double)ordinates[offset], (Double)ordinates[offset + 1], Double.NaN));
                         break;
                     case 3:
-                        pts.Add(new Coordinate((Double) ordinates[offset], (Double) ordinates[offset + 1],
-                                               (Double) ordinates[offset + 2]));
+                        pts.Add(new Coordinate((Double)ordinates[offset], (Double)ordinates[offset + 1],
+                                               (Double)ordinates[offset + 2]));
                         break;
                 }
 
@@ -207,13 +199,13 @@ namespace NetTopologySuite.IO
 
             int sOffset = StartingOffset(elemInfo, elemIndex);
 
-            int length = coords.Count*dim;
+            int length = coords.Count * dim;
 
             if (!(sOffset <= length))
                 throw new ArgumentException("ELEM_INFO STARTING_OFFSET " + sOffset +
                                             " inconsistent with ORDINATES length " + coords.Count);
 
-            int endTriplet = (numGeom != -1) ? elemIndex + numGeom : elemInfo.Length/3 + 1;
+            int endTriplet = (numGeom != -1) ? elemIndex + numGeom : elemInfo.Length / 3 + 1;
 
             var list = new List<IGeometry>();
             SdoEType etype;
@@ -258,7 +250,7 @@ namespace NetTopologySuite.IO
                     case SdoEType.Polygon:
                     case SdoEType.PolygonExterior:
                         geom = CreatePolygon(dim, lrs, elemInfo, i, coords);
-                        i += ((Polygon) geom).NumInteriorRings;
+                        i += ((Polygon)geom).NumInteriorRings;
 
                         break;
 
@@ -272,8 +264,8 @@ namespace NetTopologySuite.IO
                                                  " not representable as a JTS Geometry." +
                                                  "(Custom and Compound Straight and Curved Geometries not supported)");
                 }
-
-                list.Add(geom);
+                if (cont)
+                    list.Add(geom);
             }
 
             var geoms = _factory.CreateGeometryCollection(list.ToArray());
@@ -289,21 +281,21 @@ namespace NetTopologySuite.IO
             SdoEType etype = EType(elemInfo, elemIndex);
             int interpretation = Interpretation(elemInfo, elemIndex);
 
-            int length = coords.Count*dim;
+            int length = coords.Count * dim;
 
             if (!(sOffset >= 1) || !(sOffset <= length))
                 throw new ArgumentException("ELEM_INFO STARTING_OFFSET " + sOffset +
                                             " inconsistent with ORDINATES length " + coords.Count);
-            
+
             if (etype != SdoEType.Polygon && etype != SdoEType.PolygonExterior)
                 throw new ArgumentException("ETYPE " + etype + " inconsistent with expected POLYGON or POLYGON_EXTERIOR");
-            
+
             if (interpretation != 1 && interpretation != 3)
             {
                 return null;
             }
 
-            int endTriplet = (numGeom != -1) ? elemIndex + numGeom : (elemInfo.Length/3) + 1;
+            int endTriplet = (numGeom != -1) ? elemIndex + numGeom : (elemInfo.Length / 3) + 1;
 
             var list = new List<IPolygon>();
             Boolean cont = true;
@@ -336,7 +328,7 @@ namespace NetTopologySuite.IO
             SdoEType etype = EType(elemInfo, elemIndex);
             int interpretation = Interpretation(elemInfo, elemIndex);
 
-            int length = coords.Count*dim;
+            int length = coords.Count * dim;
 
             if (!(sOffset >= 1) || !(sOffset <= length))
                 throw new ArgumentException("ELEM_INFO STARTING_OFFSET " + sOffset +
@@ -349,7 +341,7 @@ namespace NetTopologySuite.IO
                 return null;
             }
 
-            int endTriplet = (numGeom != -1) ? (elemIndex + numGeom) : (elemInfo.Length/3);
+            int endTriplet = (numGeom != -1) ? (elemIndex + numGeom) : (elemInfo.Length / 3);
 
             var list = new List<ILineString>();
 
@@ -390,10 +382,10 @@ namespace NetTopologySuite.IO
 
             int len = dim + lrs;
 
-            int start = (sOffset - 1)/len;
+            int start = (sOffset - 1) / len;
             int end = start + interpretation;
 
-            var points = _factory.CreateMultiPoint(SubArray(coords, start, end));
+            var points = _factory.CreateMultiPointFromCoords(SubArray(coords, start, end));
 
             return points;
         }
@@ -405,11 +397,11 @@ namespace NetTopologySuite.IO
             SdoEType etype = EType(elemInfo, elemIndex);
             int interpretation = Interpretation(elemInfo, elemIndex);
 
-            if (!(1 <= sOffset && sOffset <= (coords.Count*dim)))
+            if (!(1 <= sOffset && sOffset <= (coords.Count * dim)))
             {
                 throw new ArgumentException(
                     "ELEM_INFO STARTING_OFFSET " + sOffset +
-                    "inconsistent with COORDINATES length " + (coords.Count*dim));
+                    "inconsistent with COORDINATES length " + (coords.Count * dim));
             }
 
             if (etype != SdoEType.Polygon && etype != SdoEType.PolygonExterior)
@@ -456,22 +448,22 @@ namespace NetTopologySuite.IO
                     cont = false;
                 }
             }
-        
+
             var poly = _factory.CreatePolygon(exteriorRing, rings.ToArray());
-        
+
             return poly;
         }
 
 
         private ILinearRing CreateLinearRing(int dim, int lrs, Decimal[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
-        
-                int
-            sOffset = StartingOffset(elemInfo, elemIndex);
+
+            int
+        sOffset = StartingOffset(elemInfo, elemIndex);
             SdoEType etype = EType(elemInfo, elemIndex);
             int interpretation = Interpretation(elemInfo, elemIndex);
-            int length = coords.Count*dim;
-        
+            int length = coords.Count * dim;
+
             if (!(sOffset <= length))
                 throw new ArgumentException("ELEM_INFO STARTING_OFFSET " + sOffset +
                                             " inconsistent with ORDINATES length " + coords.Count);
@@ -486,12 +478,12 @@ namespace NetTopologySuite.IO
                 return null;
             }
             ILinearRing ring;
-        
+
             int len = (dim + lrs);
-            int start = (sOffset - 1)/len;
+            int start = (sOffset - 1) / len;
             int eOffset = StartingOffset(elemInfo, elemIndex + 1); // -1 for end
-            int end = (eOffset != -1) ? ((eOffset - 1)/len) : coords.Count;
-        
+            int end = (eOffset != -1) ? ((eOffset - 1) / len) : coords.Count;
+
             if (interpretation == 1)
             {
                 ring = new LinearRing(ToPointArray(SubList(coords, start, end)));
@@ -508,42 +500,42 @@ namespace NetTopologySuite.IO
                                  {
                                      min, new Coordinate(max.X, min.Y), max, new Coordinate(min.X, max.Y) , min
                                  });
-            
+
                 ring = _factory.CreateLinearRing(pts.ToArray());
             }
-        
+
             return ring;
         }
 
 
-       private ILineString CreateLine(int dim, int lrs, Decimal[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private ILineString CreateLine(int dim, int lrs, Decimal[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
-        
-                int
-            sOffset = StartingOffset(elemInfo, elemIndex);
+
+            int
+        sOffset = StartingOffset(elemInfo, elemIndex);
             SdoEType etype = EType(elemInfo, elemIndex);
             int interpretation = Interpretation(elemInfo, elemIndex);
-        
+
             if (etype != SdoEType.Line)
                 return null;
-        
+
             if (interpretation != 1)
             {
                 throw new ArgumentException("ELEM_INFO INTERPRETAION " +
-                                         interpretation + " not supported" + 
-                                         "by JTS LineString.  Straight edges" + 
+                                         interpretation + " not supported" +
+                                         "by JTS LineString.  Straight edges" +
                                          "( ELEM_INFO INTERPRETAION 1) is supported");
             }
-        
-                int
-            len = (dim + lrs);
-            int start = (sOffset - 1)/len;
+
+            int
+        len = (dim + lrs);
+            int start = (sOffset - 1) / len;
             int eOffset = StartingOffset(elemInfo, elemIndex + 1); // -1 for end
-            int end = (eOffset != -1) ? ((eOffset - 1)/len) : coords.Count;
-        
-            
+            int end = (eOffset != -1) ? ((eOffset - 1) / len) : coords.Count;
+
+
             var line = _factory.CreateLineString(ToPointArray(SubList(coords, start, end)));
-        
+
             return line;
         }
 
@@ -553,7 +545,7 @@ namespace NetTopologySuite.IO
         {
             var pts = new List<Coordinate>(input.Count);
             foreach (Coordinate point in input)
-                pts.Add(new Coordinate(point.X, point.Y, point.Y));
+                pts.Add(new Coordinate(point.X, point.Y, point.Z));
 
             return pts.ToArray();
         }
@@ -563,7 +555,7 @@ namespace NetTopologySuite.IO
             int sOffset = StartingOffset(elemInfo, elemIndex);
             SdoEType etype = EType(elemInfo, elemIndex);
             int interpretation = Interpretation(elemInfo, elemIndex);
-        
+
             if (!(sOffset >= 1) || !(sOffset <= coords.Count))
                 throw new ArgumentException("ELEM_INFO STARTING_OFFSET " + sOffset +
                                             " inconsistent with ORDINATES length " + coords.Count);
@@ -573,11 +565,11 @@ namespace NetTopologySuite.IO
             {
                 return null;
             }
-        
+
             int len = (dim + lrs);
-            int start = (sOffset - 1)/len;
+            int start = (sOffset - 1) / len;
             int eOffset = StartingOffset(elemInfo, elemIndex + 1); // -1 for end
-        
+
             Coordinate point;
             if ((sOffset == 1) && (eOffset == -1))
             {
@@ -586,10 +578,10 @@ namespace NetTopologySuite.IO
             }
             else
             {
-                int end = (eOffset != -1) ? ((eOffset - 1)/len) : coords.Count;
+                int end = (eOffset != -1) ? ((eOffset - 1) / len) : coords.Count;
                 point = SubList(coords, start, end)[0];
             }
-        
+
             return _factory.CreatePoint(point);
         }
 
@@ -601,11 +593,9 @@ namespace NetTopologySuite.IO
             {
                 return coords;
             }
-        
+
             return coords.GetRange(start, (end - start));
         }
-
-
 
         private static Coordinate[] SubArray(List<Coordinate> coords, int start, int end)
         {
@@ -615,34 +605,32 @@ namespace NetTopologySuite.IO
 
         private static SdoEType EType(Decimal[] elemInfo, int tripletIndex)
         {
-            if (((tripletIndex*3) + 1) >= elemInfo.Length)
+            if (((tripletIndex * 3) + 1) >= elemInfo.Length)
             {
                 return SdoEType.Unknown;
             }
-        
-            return (SdoEType) elemInfo[(tripletIndex*3) + 1];
-        }
 
+            return (SdoEType)elemInfo[(tripletIndex * 3) + 1];
+        }
 
         private static int Interpretation(Decimal[] elemInfo, int tripletIndex)
         {
-            if (((tripletIndex*3) + 2) >= elemInfo.Length)
+            if (((tripletIndex * 3) + 2) >= elemInfo.Length)
             {
                 return -1;
             }
-            
-            return (Int32) elemInfo[(tripletIndex*3) + 2];
+
+            return (Int32)elemInfo[(tripletIndex * 3) + 2];
         }
 
-    
         private static Int32 StartingOffset(Decimal[] elemInfo, int tripletIndex)
         {
-            if (((tripletIndex*3) + 0) >= elemInfo.Length)
+            if (((tripletIndex * 3) + 0) >= elemInfo.Length)
             {
                 return -1;
             }
-        
-            return (Int32) elemInfo[(tripletIndex*3) + 0];
+
+            return (Int32)elemInfo[(tripletIndex * 3) + 0];
         }
     }
 }

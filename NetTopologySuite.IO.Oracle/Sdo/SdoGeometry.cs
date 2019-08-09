@@ -7,62 +7,31 @@ namespace NetTopologySuite.IO.Sdo
     [OracleCustomTypeMapping("MDSYS.SDO_GEOMETRY")]
     public class SdoGeometry : OracleCustomTypeBase<SdoGeometry>
     {
-
-// ReSharper disable InconsistentNaming
+        // ReSharper disable InconsistentNaming
         private enum OracleObjectColumns { SDO_GTYPE, SDO_SRID, SDO_POINT, SDO_ELEM_INFO, SDO_ORDINATES }
-// ReSharper restore InconsistentNaming
+        // ReSharper restore InconsistentNaming
 
         private decimal? _minX, _maxX, _minY, _maxY, _minZ, _maxZ;
 
-        private decimal? _sdoGtype;
+        [OracleObjectMapping(0)]
+        public decimal? SdoGtype { get; set; }
 
-        [OracleObjectMappingAttribute(0)]
-        public decimal? SdoGtype
-        {
-            get { return _sdoGtype; }
-            set { _sdoGtype = value; }
-        }
+        [OracleObjectMapping(1)]
+        public decimal? Sdo_Srid { get; set; }
 
-        private decimal? _sdoSrid;
+        [OracleObjectMapping(2)]
+        public SdoPoint Point { get; set; }
 
-        [OracleObjectMappingAttribute(1)]
-        public decimal? Sdo_Srid
-        {
-            get { return _sdoSrid; }
-            set { _sdoSrid = value; }
-        }
+        [OracleObjectMapping(3)]
+        public decimal[] ElemArray { get; set; }
 
-        private SdoPoint _point;
+        [OracleObjectMapping(4)]
+        public decimal[] OrdinatesArray { get; set; }
 
-        [OracleObjectMappingAttribute(2)]
-        public SdoPoint Point
-        {
-            get { return _point; }
-            set { _point = value; }
-        }
-
-        private decimal[] _elemArray;
-
-        [OracleObjectMappingAttribute(3)]
-        public decimal[] ElemArray
-        {
-            get { return _elemArray; }
-            set { _elemArray = value; }
-        }
-
-        private decimal[] _ordinatesArray;
-
-        [OracleObjectMappingAttribute(4)]
-        public decimal[] OrdinatesArray
-        {
-            get { return _ordinatesArray; }
-            set { _ordinatesArray = value; }
-        }
-
-        [OracleCustomTypeMappingAttribute("MDSYS.SDO_ELEM_INFO_ARRAY")]
+        [OracleCustomTypeMapping("MDSYS.SDO_ELEM_INFO_ARRAY")]
         public class ElemArrayFactory : OracleArrayTypeFactoryBase<decimal> { }
 
-        [OracleCustomTypeMappingAttribute("MDSYS.SDO_ORDINATE_ARRAY")]
+        [OracleCustomTypeMapping("MDSYS.SDO_ORDINATE_ARRAY")]
         public class OrdinatesArrayFactory : OracleArrayTypeFactoryBase<decimal> { }
 
         public override void MapFromCustomObject()
@@ -87,84 +56,112 @@ namespace NetTopologySuite.IO.Sdo
         {
             _minX = _minY = _minZ = null;
             _maxX = _maxY = _maxZ = null;
-            Int32 dim = Math.Min(((Int32)SdoGtype.Value)/1000, 3);
-            if (_point != null)
+            int dim = Math.Min(((int)SdoGtype.Value) / 1000, 3);
+            if (Point != null)
             {
-                _minX = _maxX = _point.X;
-                _minY = _maxY = _point.Y;
-                if (dim > 2)_minZ = _maxZ = _point.Z;
+                _minX = _maxX = Point.X;
+                _minY = _maxY = Point.Y;
+                if (dim > 2)
+                {
+                    _minZ = _maxZ = Point.Z;
+                }
             }
 
-            if ( _ordinatesArray != null )
+            if (OrdinatesArray != null)
             {
-                for (int i = 0; i < _ordinatesArray.Length; i+=dim )
+                for (int i = 0; i < OrdinatesArray.Length; i += dim)
                 {
-                    _minX = _minX.HasValue ? Math.Min(_minX.Value, _ordinatesArray[i]) : _ordinatesArray[i]; 
-                    _minY = _minY.HasValue ? Math.Min(_minY.Value, _ordinatesArray[i+1]) : _ordinatesArray[i+1];
-                    if ( dim > 2 ) _minZ = _minZ.HasValue ? Math.Min(_minZ.Value, _ordinatesArray[i+2]) : _ordinatesArray[i+2];
-                    _maxX = _maxX.HasValue ? Math.Max(_maxX.Value, _ordinatesArray[i]) : _ordinatesArray[i];
-                    _maxY = _maxY.HasValue ? Math.Max(_maxY.Value, _ordinatesArray[i+1]) : _ordinatesArray[i+1];
-                    if ( dim > 2 )_maxZ = _maxZ.HasValue ? Math.Max(_maxZ.Value, _ordinatesArray[i+2]) : _ordinatesArray[i+2];
+                    _minX = _minX.HasValue ? Math.Min(_minX.Value, OrdinatesArray[i]) : OrdinatesArray[i];
+                    _minY = _minY.HasValue ? Math.Min(_minY.Value, OrdinatesArray[i + 1]) : OrdinatesArray[i + 1];
+                    if (dim > 2)
+                    {
+                        _minZ = _minZ.HasValue ? Math.Min(_minZ.Value, OrdinatesArray[i + 2]) : OrdinatesArray[i + 2];
+                    }
+
+                    _maxX = _maxX.HasValue ? Math.Max(_maxX.Value, OrdinatesArray[i]) : OrdinatesArray[i];
+                    _maxY = _maxY.HasValue ? Math.Max(_maxY.Value, OrdinatesArray[i + 1]) : OrdinatesArray[i + 1];
+                    if (dim > 2)
+                    {
+                        _maxZ = _maxZ.HasValue ? Math.Max(_maxZ.Value, OrdinatesArray[i + 2]) : OrdinatesArray[i + 2];
+                    }
                 }
             }
         }
 
-        public Decimal MinX
+        public decimal MinX
         {
             get
             {
                 if (!_minX.HasValue)
+                {
                     GetMinMax();
-                return _minX.HasValue ? _minX.Value : Decimal.MinValue;
+                }
+
+                return _minX ?? decimal.MinValue;
             }
         }
 
-        public Decimal MinY
+        public decimal MinY
         {
             get
             {
                 if (!_minY.HasValue)
+                {
                     GetMinMax();
-                return _minY.HasValue ? _minY.Value : Decimal.MinValue;
+                }
+
+                return _minY ?? decimal.MinValue;
             }
         }
 
-        public Decimal MinZ
+        public decimal MinZ
         {
             get
             {
                 if (!_minZ.HasValue)
+                {
                     GetMinMax();
-                return _minZ.HasValue ? _minZ.Value : Decimal.MinValue;
+                }
+
+                return _minZ ?? decimal.MinValue;
             }
         }
-        public Decimal MaxX
+        public decimal MaxX
         {
             get
             {
                 if (!_maxX.HasValue)
+                {
                     GetMinMax();
-                return _maxX.HasValue ? _maxX.Value : Decimal.MaxValue;
+                }
+
+                return _maxX ?? decimal.MaxValue;
             }
         }
 
-        public Decimal MaxY
+        public decimal MaxY
         {
             get
             {
                 if (!_maxY.HasValue)
+                {
                     GetMinMax();
-                return _maxY.HasValue ? _maxY.Value : Decimal.MaxValue;
+                }
+
+                return _maxY ?? decimal.MaxValue;
             }
         }
 
-        public Decimal MaxZ
+        public decimal MaxZ
         {
             get
             {
                 if (!_maxZ.HasValue)
+                {
                     GetMinMax();
-                return _maxZ.HasValue ? _maxZ.Value : Decimal.MaxValue;
+                }
+
+                return _maxZ ?? decimal.MaxValue;
             }
         }
     }

@@ -2,13 +2,14 @@ namespace NetTopologySuite.IO.Sdo
 {
     internal enum SdoGTemplate
     {
-        Coordinate = 01,
-        Line = 02,
-        Polygon = 03,
-        Collection = 04,
-        MultiPoint = 05,
-        MultiLine = 06,
-        MultiPolygon = 07,
-        Unknown = -1
+        Unknown = -1,
+
+        Coordinate = 1,
+        Line = 2,
+        Polygon = 3,
+        Collection = 4,
+        MultiPoint = 5,
+        MultiLine = 6,
+        MultiPolygon = 7,
     }
 }
