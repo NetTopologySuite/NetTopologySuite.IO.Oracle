@@ -23,6 +23,6 @@
 
   <ItemGroup>
     <PackageReference Include="NetTopologySuite" Version="[2.0.0, 3.0.0-A)" />
-    <PackageReference Include="odp.net.x86" Version="112.3.20" />
+    <PackageReference Include="Oracle.ManagedDataAccess" Version="21.4.0" />
   </ItemGroup>
 </Project>

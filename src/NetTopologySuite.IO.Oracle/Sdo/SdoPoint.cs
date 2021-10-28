@@ -1,5 +1,5 @@
 ﻿using NetTopologySuite.IO.UdtBase;
-using Oracle.DataAccess.Types;
+using Oracle.ManagedDataAccess.Types;
 
 namespace NetTopologySuite.IO.Sdo
 {

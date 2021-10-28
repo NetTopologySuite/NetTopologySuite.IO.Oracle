@@ -1,6 +1,6 @@
 ﻿using System;
-using Oracle.DataAccess.Types;
-using Oracle.DataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
+using Oracle.ManagedDataAccess.Client;
 
 namespace NetTopologySuite.IO.UdtBase
 {
@@ -12,7 +12,7 @@ namespace NetTopologySuite.IO.UdtBase
                                                           ", oracle column is null, failed to map to . NET valuetype, column ";
 
         private OracleConnection _connection;
-        private IntPtr _pUdt;
+        private object _pObject;
 
         private bool _isNull;
 
@@ -22,24 +22,24 @@ namespace NetTopologySuite.IO.UdtBase
 
         public IOracleCustomType CreateObject() => new T();
 
-        protected void SetConnectionAndPointer(OracleConnection connection, IntPtr pUdt)
+        protected void SetConnectionAndPointer(OracleConnection connection, object pObject)
         {
             _connection = connection;
-            _pUdt = pUdt;
+            _pObject = pObject;
         }
 
         public abstract void MapFromCustomObject();
         public abstract void MapToCustomObject();
 
-        public void FromCustomObject(OracleConnection con, IntPtr pUdt)
+        public void FromCustomObject(OracleConnection con, object pObject)
         {
-            SetConnectionAndPointer(con, pUdt);
+            SetConnectionAndPointer(con, pObject);
             MapFromCustomObject();
         }
 
-        public void ToCustomObject(OracleConnection con, IntPtr pUdt)
+        public void ToCustomObject(OracleConnection con, object pObject)
         {
-            SetConnectionAndPointer(con, pUdt);
+            SetConnectionAndPointer(con, pObject);
             MapToCustomObject();
         }
 
@@ -47,7 +47,7 @@ namespace NetTopologySuite.IO.UdtBase
         {
             if (value != null)
             {
-                OracleUdt.SetValue(_connection, _pUdt, oracleColumnName, value);
+                OracleUdt.SetValue(_connection, _pObject, oracleColumnName, value);
             }
         }
 
@@ -55,13 +55,13 @@ namespace NetTopologySuite.IO.UdtBase
         {
             if (value != null)
             {
-                OracleUdt.SetValue(_connection, _pUdt, oracleColumnId, value);
+                OracleUdt.SetValue(_connection, _pObject, oracleColumnId, value);
             }
         }
 
         protected TUser GetValue<TUser>(string oracleColumnName)
         {
-            if (OracleUdt.IsDBNull(_connection, _pUdt, oracleColumnName))
+            if (OracleUdt.IsDBNull(_connection, _pObject, oracleColumnName))
             {
                 if (default(TUser) != null)
                 {
@@ -72,12 +72,12 @@ namespace NetTopologySuite.IO.UdtBase
                 return default(TUser);
             }
 
-            return (TUser)OracleUdt.GetValue(_connection, _pUdt, oracleColumnName);
+            return (TUser)OracleUdt.GetValue(_connection, _pObject, oracleColumnName);
         }
 
         protected TUser GetValue<TUser>(int oracleColumnId)
         {
-            if (OracleUdt.IsDBNull(_connection, _pUdt, oracleColumnId))
+            if (OracleUdt.IsDBNull(_connection, _pObject, oracleColumnId))
             {
                 if (default(TUser) != null)
                 {
@@ -88,7 +88,7 @@ namespace NetTopologySuite.IO.UdtBase
                 return default(TUser);
             }
 
-            return (TUser)OracleUdt.GetValue(_connection, _pUdt, oracleColumnId);
+            return (TUser)OracleUdt.GetValue(_connection, _pObject, oracleColumnId);
         }
     }
 }
