@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">  
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
