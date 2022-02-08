@@ -7,13 +7,13 @@ namespace NetTopologySuite.IO.Sdo
     public class SdoPoint : OracleCustomTypeBase<SdoPoint>
     {
         [OracleObjectMapping("X")]
-        public decimal? X { get; set; }
+        public double? X { get; set; }
 
         [OracleObjectMapping("Y")]
-        public decimal? Y { get; set; }
+        public double? Y { get; set; }
 
         [OracleObjectMapping("Z")]
-        public decimal? Z { get; set; }
+        public double? Z { get; set; }
 
         public override void MapFromCustomObject()
         {
@@ -24,9 +24,9 @@ namespace NetTopologySuite.IO.Sdo
 
         public override void MapToCustomObject()
         {
-            X = GetValue<decimal?>("X");
-            Y = GetValue<decimal?>("Y");
-            Z = GetValue<decimal?>("Z");
+            X = GetValue<double?>("X");
+            Y = GetValue<double?>("Y");
+            Z = GetValue<double?>("Z");
         }
     }
 }

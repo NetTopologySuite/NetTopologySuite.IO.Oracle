@@ -11,28 +11,28 @@ namespace NetTopologySuite.IO.Sdo
         private enum OracleObjectColumns { SDO_GTYPE, SDO_SRID, SDO_POINT, SDO_ELEM_INFO, SDO_ORDINATES }
         // ReSharper restore InconsistentNaming
 
-        private decimal? _minX, _maxX, _minY, _maxY, _minZ, _maxZ;
+        private double? _minX, _maxX, _minY, _maxY, _minZ, _maxZ;
 
         [OracleObjectMapping(0)]
-        public decimal? SdoGtype { get; set; }
+        public double? SdoGtype { get; set; }
 
         [OracleObjectMapping(1)]
-        public decimal? Sdo_Srid { get; set; }
+        public double? Sdo_Srid { get; set; }
 
         [OracleObjectMapping(2)]
         public SdoPoint Point { get; set; }
 
         [OracleObjectMapping(3)]
-        public decimal[] ElemArray { get; set; }
+        public double[] ElemArray { get; set; }
 
         [OracleObjectMapping(4)]
-        public decimal[] OrdinatesArray { get; set; }
+        public double[] OrdinatesArray { get; set; }
 
         [OracleCustomTypeMapping("MDSYS.SDO_ELEM_INFO_ARRAY")]
-        public class ElemArrayFactory : OracleArrayTypeFactoryBase<decimal> { }
+        public class ElemArrayFactory : OracleArrayTypeFactoryBase<double> { }
 
         [OracleCustomTypeMapping("MDSYS.SDO_ORDINATE_ARRAY")]
-        public class OrdinatesArrayFactory : OracleArrayTypeFactoryBase<decimal> { }
+        public class OrdinatesArrayFactory : OracleArrayTypeFactoryBase<double> { }
 
         public override void MapFromCustomObject()
         {
@@ -45,11 +45,11 @@ namespace NetTopologySuite.IO.Sdo
 
         public override void MapToCustomObject()
         {
-            SdoGtype = GetValue<decimal?>((int)OracleObjectColumns.SDO_GTYPE);
-            Sdo_Srid = GetValue<decimal?>((int)OracleObjectColumns.SDO_SRID);
+            SdoGtype = GetValue<double?>((int)OracleObjectColumns.SDO_GTYPE);
+            Sdo_Srid = GetValue<double?>((int)OracleObjectColumns.SDO_SRID);
             Point = GetValue<SdoPoint>((int)OracleObjectColumns.SDO_POINT);
-            ElemArray = GetValue<decimal[]>((int)OracleObjectColumns.SDO_ELEM_INFO);
-            OrdinatesArray = GetValue<decimal[]>((int)OracleObjectColumns.SDO_ORDINATES);
+            ElemArray = GetValue<double[]>((int)OracleObjectColumns.SDO_ELEM_INFO);
+            OrdinatesArray = GetValue<double[]>((int)OracleObjectColumns.SDO_ORDINATES);
         }
 
         private void GetMinMax()
@@ -88,7 +88,7 @@ namespace NetTopologySuite.IO.Sdo
             }
         }
 
-        public decimal MinX
+        public double MinX
         {
             get
             {
@@ -97,11 +97,11 @@ namespace NetTopologySuite.IO.Sdo
                     GetMinMax();
                 }
 
-                return _minX ?? decimal.MinValue;
+                return _minX ?? double.MinValue;
             }
         }
 
-        public decimal MinY
+        public double MinY
         {
             get
             {
@@ -110,11 +110,11 @@ namespace NetTopologySuite.IO.Sdo
                     GetMinMax();
                 }
 
-                return _minY ?? decimal.MinValue;
+                return _minY ?? double.MinValue;
             }
         }
 
-        public decimal MinZ
+        public double MinZ
         {
             get
             {
@@ -123,10 +123,10 @@ namespace NetTopologySuite.IO.Sdo
                     GetMinMax();
                 }
 
-                return _minZ ?? decimal.MinValue;
+                return _minZ ?? double.MinValue;
             }
         }
-        public decimal MaxX
+        public double MaxX
         {
             get
             {
@@ -135,11 +135,11 @@ namespace NetTopologySuite.IO.Sdo
                     GetMinMax();
                 }
 
-                return _maxX ?? decimal.MaxValue;
+                return _maxX ?? double.MaxValue;
             }
         }
 
-        public decimal MaxY
+        public double MaxY
         {
             get
             {
@@ -148,11 +148,11 @@ namespace NetTopologySuite.IO.Sdo
                     GetMinMax();
                 }
 
-                return _maxY ?? decimal.MaxValue;
+                return _maxY ?? double.MaxValue;
             }
         }
 
-        public decimal MaxZ
+        public double MaxZ
         {
             get
             {
@@ -161,7 +161,7 @@ namespace NetTopologySuite.IO.Sdo
                     GetMinMax();
                 }
 
-                return _maxZ ?? decimal.MaxValue;
+                return _maxZ ?? double.MaxValue;
             }
         }
     }
