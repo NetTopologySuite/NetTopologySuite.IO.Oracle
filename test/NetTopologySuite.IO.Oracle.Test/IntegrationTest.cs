@@ -29,6 +29,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         [TestCase("MULTIPOINT(11 12, 20 20)")]
         [TestCase("MULTIPOINT Z(11 12 12, 20 20 20)")]
         [TestCase("LINESTRING(10 10,20 20,50 50,34 34)")]
+        [TestCase("LINESTRING(3383.69840913624 0.860795155102757,20 0.860795155102757,0.860795155102757 0.222096232800789,0.222096232800789 0.222096232800789)")]
         [TestCase("LINESTRING Z(10 10 20,20 20 20,50 50 50,34 34 34)")]
         [TestCase("POLYGON((10 10,20 10,20 20,10 20,10 10))")]
         [TestCase("POLYGON((10 10,20 10,20 20,10 20,10 10),(5 5,5 6,6 6,6 5,5 5))")]
@@ -45,7 +46,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         [TestCase("GEOMETRYCOLLECTION(POINT(10 10),LINESTRING(10 10,20 20,50 50,34 34))")]
         [TestCase("GEOMETRYCOLLECTION(POINT(10 10),MULTIPOINT(11 12, 20 20))")]
 
-        public void TestWriteReadGeometryTable(string wkt)
+        public void TestWritingAndReadingBackFromGeometryTable(string wkt)
         {
             // Open a connection.
             var connection = OracleHelper.OpenConnection();

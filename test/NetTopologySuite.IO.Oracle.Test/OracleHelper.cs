@@ -17,13 +17,8 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         /// <returns></returns>
         public static OracleConnection OpenConnection()
         {
-            var user = "SYS";
-            var pwd = "mysecurepassword";
-            var privilege = "SYSDBA";
-            var db = " (DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA =(SERVER = DEDICATED)(SERVICE_NAME = ORALSID)))";
-            var conStringUser = "User Id=" + user + ";Password=" + pwd + ";Data Source=" + db + ";DBA Privilege=" + privilege + ";";
-            
-            OracleConnection con = new OracleConnection(conStringUser);
+            string connectionString = ConfigurationManager.AppSettings.Get("TestDBConnectionString");
+            OracleConnection con = new OracleConnection(connectionString);
             con.Open();
             return con;
         }
@@ -36,7 +31,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         /// <returns>The name of the table as returned from sys.all_tables</returns>
         public static string CreateGeometryTable(OracleConnection connection, string tableName)
         {
-            OracleHelper.DropGeometryTable(connection, tableName);
+            DropGeometryTable(connection, tableName);
 
             var queryString = $"CREATE TABLE {tableName} (data MSYS.SDO_GEOMETRY)";
             using OracleCommand command = new OracleCommand(queryString, connection);
@@ -74,6 +69,8 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         /// </summary>
         public static Geometries.Geometry WriteGeometryToTable(string wkt, string testTableName)
         {
+            
+
             var geom = ConvertWKTToGeometry(wkt);
             SdoGeometry udt = ConvertWKTToOracleUDT(geom);
 

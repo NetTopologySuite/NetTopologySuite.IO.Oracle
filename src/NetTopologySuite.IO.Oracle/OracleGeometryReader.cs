@@ -45,7 +45,7 @@ namespace NetTopologySuite.IO
             return retVal;
         }
 
-        private Geometry Create(int gType, SdoPoint point, Decimal[] elemInfo, Decimal[] ordinates)
+        private Geometry Create(int gType, SdoPoint point, double[] elemInfo, double[] ordinates)
         {
             int lrs = (gType % 1000) / 100;
 
@@ -91,7 +91,7 @@ namespace NetTopologySuite.IO
                     coords = Coordinates(dim, lrs, geomTemplate,
                                          new[] { point.X.Value, point.Y.Value, point.Z.Value });
                 }
-                elemInfo = new Decimal[] { 1, (Int32)SdoEType.Coordinate, 1 };
+                elemInfo = new double[] { 1, (int) SdoEType.Coordinate, 1 };
             }
             else
             {
@@ -126,7 +126,7 @@ namespace NetTopologySuite.IO
             }
         }
 
-        private static List<Coordinate> Coordinates(int dim, int lrs, int gtemplate, Decimal[] ordinates)
+        private static List<Coordinate> Coordinates(int dim, int lrs, int gtemplate, double[] ordinates)
         {
             if ((ordinates == null) || (ordinates.Length == 0))
             {
@@ -139,10 +139,9 @@ namespace NetTopologySuite.IO
             if ((dim == 2) && (lrs == 0) && (gtemplate == 01) && (ordinates.Length == 3))
             {
                 var pt = new List<Coordinate>(1)
-                             {
-                                 new CoordinateZ((Double) ordinates[0], (Double) ordinates[1],
-                                                 (Double) ordinates[2])
-                             };
+                {
+                    new CoordinateZ(ordinates[0], ordinates[1], ordinates[2])
+                };
                 return pt;
             }
 
@@ -192,7 +191,7 @@ namespace NetTopologySuite.IO
             return pts;
         }
 
-        private GeometryCollection CreateCollection(int dim, int lrs, Decimal[] elemInfo, int elemIndex,
+        private GeometryCollection CreateCollection(int dim, int lrs, double[] elemInfo, int elemIndex,
                                                     List<Coordinate> coords, int numGeom)
         {
 
@@ -272,7 +271,7 @@ namespace NetTopologySuite.IO
             return geoms;
         }
 
-        private MultiPolygon CreateMultiPolygon(int dim, int lrs, decimal[] elemInfo, int elemIndex,
+        private MultiPolygon CreateMultiPolygon(int dim, int lrs, double[] elemInfo, int elemIndex,
                                                 List<Coordinate> coords, int numGeom)
         {
 
@@ -319,7 +318,7 @@ namespace NetTopologySuite.IO
             return polys;
         }
 
-        private MultiLineString CreateMultiLine(int dim, int lrs, Decimal[] elemInfo, int elemIndex,
+        private MultiLineString CreateMultiLine(int dim, int lrs, double[] elemInfo, int elemIndex,
                                                 List<Coordinate> coords, int numGeom)
         {
 
@@ -363,7 +362,7 @@ namespace NetTopologySuite.IO
             return lines;
         }
 
-        private MultiPoint CreateMultiPoint(int dim, int lrs, Decimal[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private MultiPoint CreateMultiPoint(int dim, int lrs, double[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
             int sOffset = StartingOffset(elemInfo, elemIndex);
             SdoEType etype = EType(elemInfo, elemIndex);
@@ -389,7 +388,7 @@ namespace NetTopologySuite.IO
             return points;
         }
 
-        private Polygon CreatePolygon(int dim, int lrs, Decimal[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private Polygon CreatePolygon(int dim, int lrs, double[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
 
             int sOffset = StartingOffset(elemInfo, elemIndex);
@@ -454,7 +453,7 @@ namespace NetTopologySuite.IO
         }
 
 
-        private LinearRing CreateLinearRing(int dim, int lrs, Decimal[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private LinearRing CreateLinearRing(int dim, int lrs, double[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
 
             int
@@ -507,7 +506,7 @@ namespace NetTopologySuite.IO
         }
 
 
-        private LineString CreateLine(int dim, int lrs, Decimal[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private LineString CreateLine(int dim, int lrs, double[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
 
             int
@@ -549,7 +548,7 @@ namespace NetTopologySuite.IO
             return pts.ToArray();
         }
 
-        private Point CreatePoint(int dim, int lrs, Decimal[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private Point CreatePoint(int dim, int lrs, double[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
             int sOffset = StartingOffset(elemInfo, elemIndex);
             SdoEType etype = EType(elemInfo, elemIndex);
@@ -602,7 +601,7 @@ namespace NetTopologySuite.IO
         }
 
 
-        private static SdoEType EType(Decimal[] elemInfo, int tripletIndex)
+        private static SdoEType EType(double[] elemInfo, int tripletIndex)
         {
             if (((tripletIndex * 3) + 1) >= elemInfo.Length)
             {
@@ -612,24 +611,24 @@ namespace NetTopologySuite.IO
             return (SdoEType)elemInfo[(tripletIndex * 3) + 1];
         }
 
-        private static int Interpretation(Decimal[] elemInfo, int tripletIndex)
+        private static int Interpretation(double[] elemInfo, int tripletIndex)
         {
             if (((tripletIndex * 3) + 2) >= elemInfo.Length)
             {
                 return -1;
             }
 
-            return (Int32)elemInfo[(tripletIndex * 3) + 2];
+            return (int) elemInfo[(tripletIndex * 3) + 2];
         }
 
-        private static Int32 StartingOffset(Decimal[] elemInfo, int tripletIndex)
+        private static int StartingOffset(double[] elemInfo, int tripletIndex)
         {
             if (((tripletIndex * 3) + 0) >= elemInfo.Length)
             {
                 return -1;
             }
 
-            return (Int32)elemInfo[(tripletIndex * 3) + 0];
+            return (int) elemInfo[(tripletIndex * 3) + 0];
         }
     }
 }

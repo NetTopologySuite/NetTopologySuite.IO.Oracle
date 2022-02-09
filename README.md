@@ -1,30 +1,23 @@
 README
-In order to perform the tests, a Docker container with an Oracle image has to be activated.
-To get an overview on how to create a Docker image with Oracle and activate its container, 
-go to: https://dev.azure.com/merkatornv/Marlin/_wiki/wikis/Marlin.wiki/203/Creating-a-Docker-image-with-Oracle-then-running-the-container
 
+In order to perform the tests, a Docker container with an Oracle XE database has to be available.
+One that worked for us is:
+```docker pull oracleinanutshell/oracle-xe-11g```
 
-An Oracle image has been built and can be accessed on Docker Hub at: https://hub.docker.com/r/arthurchome/oracle_docker_image
+Make sure you bind the correct port when running the image:
+docker run -d -p 49161:1521 oracleinanutshell/oracle-xe-11g
 
-Once you got an Oracle image, follow these steps:
+You should be able to connect using:
+hostname: localhost
+port: 49161
+sid: xe
+username: system
+password: oracle
 
-STEP 1: run the container with the image
--type '$ docker images' to see which images are currently in your docker private repository
--You should have one called 'oracle/database'
--type following command to run the container: 
- '$ docker run --name oracle -d -p 1521:1521 -p 5500:5500 -e ORACLE_PWD=mysecurepassword -e ORACLE_SID=ORALSID -e SERSID -e ORACLE_PDB=ORALPDB oracle/database:19.3.0-ee'
--See whether it's running with '$ docker ps'
+Make sure you change the connectionstring in the test project's App.config to match with whatever test database you want to run the tests against. 
+The default settings assume the above docker image is running on localhost.
 
-Step 2: test the connection with Oracle SQL Developer
--Install Oracel SQL Developer
--Add new connection and check Oracle Docker:
- * Username: SYS
- * Password: mysecurepassword
- * Hostname: localhost
- * Port: 1521
- * Service name: ORALSID
-
-Step 3: perform the tests
+Perform the tests
 -Open the solution 'NetTopologySuite.IO.Oracle.sln'
 -Go to test > test explorer 
 -Run the tests (should be all green)

@@ -70,8 +70,8 @@ namespace NetTopologySuite.IO
 
         private SdoGeometry Write(Point point)
         {
-            var elemInfoList = new List<decimal>();
-            var ordinateList = new List<decimal>();
+            var elemInfoList = new List<double>();
+            var ordinateList = new List<double>();
 
             ProcessPoint(point, elemInfoList, ordinateList, 1);
 
@@ -86,8 +86,8 @@ namespace NetTopologySuite.IO
 
         private SdoGeometry Write(LineString line)
         {
-            var elemInfoList = new List<decimal>();
-            var ordinateList = new List<decimal>();
+            var elemInfoList = new List<double>();
+            var ordinateList = new List<double>();
 
             ProcessLinear(line, elemInfoList, ordinateList, 1);
 
@@ -102,8 +102,8 @@ namespace NetTopologySuite.IO
 
         private SdoGeometry Write(Polygon polygon)
         {
-            var elemInfoList = new List<decimal>();
-            var ordinateList = new List<decimal>();
+            var elemInfoList = new List<double>();
+            var ordinateList = new List<double>();
 
             ProcessPolygon(polygon, elemInfoList, ordinateList, 1);
 
@@ -118,8 +118,8 @@ namespace NetTopologySuite.IO
 
         private SdoGeometry Write(MultiPoint multiPoint)
         {
-            var elemInfoList = new List<decimal>();
-            var ordinateList = new List<decimal>();
+            var elemInfoList = new List<double>();
+            var ordinateList = new List<double>();
 
             ProcessMultiPoint(multiPoint, elemInfoList, ordinateList, 1);
 
@@ -134,8 +134,8 @@ namespace NetTopologySuite.IO
 
         private SdoGeometry Write(MultiLineString multiLineString)
         {
-            var elemInfoList = new List<decimal>();
-            var ordinateList = new List<decimal>();
+            var elemInfoList = new List<double>();
+            var ordinateList = new List<double>();
 
             ProcessMultiLineString(multiLineString, elemInfoList, ordinateList, 1);
 
@@ -150,8 +150,8 @@ namespace NetTopologySuite.IO
 
         private SdoGeometry Write(MultiPolygon multiPolygon)
         {
-            var elemInfoList = new List<decimal>();
-            var ordinateList = new List<decimal>();
+            var elemInfoList = new List<double>();
+            var ordinateList = new List<double>();
 
             ProcessMultiPolygon(multiPolygon, elemInfoList, ordinateList, 1);
 
@@ -166,8 +166,8 @@ namespace NetTopologySuite.IO
 
         private SdoGeometry Write(GeometryCollection geometryCollection)
         {
-            var elemInfoList = new List<decimal>();
-            var ordinateList = new List<decimal>();
+            var elemInfoList = new List<double>();
+            var ordinateList = new List<double>();
             int pos = 1;
 
             int cnt = geometryCollection.NumGeometries;
@@ -214,7 +214,7 @@ namespace NetTopologySuite.IO
             };
         }
 
-        private int ProcessPoint(Point point, List<decimal> elemInfoList, List<decimal> ordinateList, int pos)
+        private int ProcessPoint(Point point, List<double> elemInfoList, List<double> ordinateList, int pos)
         {
             elemInfoList.Add(pos);
             elemInfoList.Add((int)SdoEType.Coordinate);
@@ -222,7 +222,7 @@ namespace NetTopologySuite.IO
             return pos + AddOrdinates(point.CoordinateSequence, ordinateList);
         }
 
-        private int ProcessLinear(LineString line, List<decimal> elemInfoList, List<decimal> ordinateList, int pos)
+        private int ProcessLinear(LineString line, List<double> elemInfoList, List<double> ordinateList, int pos)
         {
             elemInfoList.Add(pos);
             elemInfoList.Add((int)SdoEType.Line);
@@ -230,7 +230,7 @@ namespace NetTopologySuite.IO
             return pos + AddOrdinates(line.CoordinateSequence, ordinateList);
         }
 
-        private int ProcessPolygon(Polygon polygon, List<decimal> elemInfoList, List<decimal> ordinateList, int pos)
+        private int ProcessPolygon(Polygon polygon, List<double> elemInfoList, List<double> ordinateList, int pos)
         {
             elemInfoList.Add(pos);
             elemInfoList.Add((int)SdoEType.PolygonExterior);
@@ -257,7 +257,7 @@ namespace NetTopologySuite.IO
             return pos;
         }
 
-        private int ProcessMultiPoint(MultiPoint multiPoint, List<decimal> elemInfoList, List<decimal> ordinateList, int pos)
+        private int ProcessMultiPoint(MultiPoint multiPoint, List<double> elemInfoList, List<double> ordinateList, int pos)
         {
             int cnt = multiPoint.NumGeometries;
 
@@ -277,7 +277,7 @@ namespace NetTopologySuite.IO
             return pos;
         }
 
-        private int ProcessMultiLineString(MultiLineString multiLineString, List<decimal> elemInfoList, List<decimal> ordinateList, int pos)
+        private int ProcessMultiLineString(MultiLineString multiLineString, List<double> elemInfoList, List<double> ordinateList, int pos)
         {
             int cnt = multiLineString.NumGeometries;
             for (int i = 0; i < cnt; i++)
@@ -289,7 +289,7 @@ namespace NetTopologySuite.IO
             return pos;
         }
 
-        private int ProcessMultiPolygon(MultiPolygon multiPolygon, List<decimal> elemInfoList, List<decimal> ordinateList, int pos)
+        private int ProcessMultiPolygon(MultiPolygon multiPolygon, List<double> elemInfoList, List<double> ordinateList, int pos)
         {
             int cnt = multiPolygon.NumGeometries;
             for (int i = 0; i < cnt; i++)
@@ -301,35 +301,35 @@ namespace NetTopologySuite.IO
             return pos;
         }
 
-        private int AddOrdinates(CoordinateSequence sequence, List<decimal> ords)
+        private int AddOrdinates(CoordinateSequence sequence, List<double> ords)
         {
             int dimension = sequence.Dimension;
             int numOfPoints = sequence.Count;
             for (int i = 0; i < numOfPoints; i++)
             {
-                ords.Add((decimal)sequence.GetX(i));
-                ords.Add((decimal)sequence.GetY(i));
+                ords.Add((double)sequence.GetX(i));
+                ords.Add((double)sequence.GetY(i));
                 if (dimension == 3)
                 {
-                    ords.Add((decimal)sequence.GetZ(i));
+                    ords.Add((double)sequence.GetZ(i));
                 }
             }
 
             return numOfPoints * dimension;
         }
 
-        private int AddOrdinatesInReverse(CoordinateSequence sequence, List<decimal> ords)
+        private int AddOrdinatesInReverse(CoordinateSequence sequence, List<double> ords)
         {
             int dimension = sequence.Dimension;
             int numOfPoints = sequence.Count;
 
             for (int i = numOfPoints - 1; i >= 0; i--)
             {
-                ords.Add((decimal)sequence.GetX(i));
-                ords.Add((decimal)sequence.GetY(i));
+                ords.Add((double)sequence.GetX(i));
+                ords.Add((double)sequence.GetY(i));
                 if (dimension == 3)
                 {
-                    ords.Add((decimal)sequence.GetZ(i));
+                    ords.Add((double)sequence.GetZ(i));
                 }
             }
 
