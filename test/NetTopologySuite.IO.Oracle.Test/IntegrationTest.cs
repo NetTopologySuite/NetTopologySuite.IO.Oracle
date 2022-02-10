@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using Oracle.ManagedDataAccess.Client;
 using NetTopologySuite.IO;
+using System.Configuration;
 
 namespace NetTopologySuite.IO.Oracle.Connection.Test
 {
@@ -15,6 +16,24 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
     {
         private const string testTableName = "NTS_TEST_GEO_DATA";
 
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            try
+            {
+                string cns = ConfigurationManager.AppSettings.Get("TestDBConnectionString");
+                TestContext.WriteLine("Trying to connect with '{0}'", cns);
+                var cnsb = new OracleConnectionStringBuilder(cns);
+                //cnsb.DataSource
+                using var conn = new OracleConnection(cnsb.ConnectionString);
+                conn.Open();
+            } catch (Exception ex)
+            {
+                TestContext.WriteLine(ex.Message);
+                TestContext.WriteLine(ex.StackTrace);
+                Assert.Ignore("Connection to Oracle database server failed");
+            }
+        }
 
         [Test]
         /// <summary>
