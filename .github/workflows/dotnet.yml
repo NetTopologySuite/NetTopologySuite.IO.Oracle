@@ -10,7 +10,16 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    services:
+      oracle:
+        image: gvenzl/oracle-xe:latest
+        env:
+          ORACLE_PASSWORD: oracle
 
+        # Forward Oracle port
+        ports:
+          - 1521:1521
+          
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -21,9 +30,5 @@ jobs:
       run: dotnet restore NetTopologySuite.IO.Oracle.sln
     - name: Build
       run: dotnet build NetTopologySuite.IO.Oracle.sln --no-restore
-    - name: Pull and run latest Oracle XE
-      run: docker pull gvenzl/oracle-xe:latest
-    - name: Run Oracle XE docker image
-      run: docker run -d -p 1521:1521 -e ORACLE_PASSWORD=oracle gvenzl/oracle-xe
     - name: Test
       run: dotnet test NetTopologySuite.IO.Oracle.sln --no-build --verbosity normal
