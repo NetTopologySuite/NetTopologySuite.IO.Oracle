@@ -88,7 +88,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
             SdoGeometry udt = ConvertWKTToOracleUDT(geom);
 
             // Open the connection
-            bool wasClosed = connection.State != ConnectionState.Closed;
+            bool wasClosed = connection.State == ConnectionState.Closed;
             if (wasClosed) connection.Open();
 
             // Drop & Create Geometry table.
