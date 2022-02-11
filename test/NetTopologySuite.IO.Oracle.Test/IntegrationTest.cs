@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System;
 using System.Data;
 using Oracle.ManagedDataAccess.Client;
@@ -22,20 +22,21 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
             try
             {
                 string cns = ConfigurationManager.AppSettings.Get("TestDBConnectionString");
-                TestContext.WriteLine("Trying to connect with '{0}'", cns);
+                Console.WriteLine("Trying to connect with '{0}'", cns);
                 var cnsb = new OracleConnectionStringBuilder(cns);
                 //cnsb.DataSource
                 using var conn = new OracleConnection(cnsb.ConnectionString);
                 conn.Open();
-            } catch (Exception ex)
+                Console.WriteLine("Connection successful!", cns);
+            }
+            catch (Exception ex)
             {
-                TestContext.WriteLine(ex.Message);
-                TestContext.WriteLine(ex.StackTrace);
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
                 Assert.Ignore("Connection to Oracle database server failed");
             }
         }
 
-        [Test]
         /// <summary>
         /// Connect to database, make a table, write to database, read to database, drop table.
         /// Assumption GEO_DATA table exists.
