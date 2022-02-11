@@ -3,24 +3,34 @@ using System.Configuration;
 using System.Data;
 using NUnit.Framework;
 using NetTopologySuite.IO.Sdo;
+using System;
 
 namespace NetTopologySuite.IO.Oracle.Connection.Test
 {
     public static class OracleHelper
     {
-
-        
-
         /// <summary>
         /// Opens a connection to the test database
         /// </summary>
         /// <returns></returns>
         public static OracleConnection OpenConnection(string connectionString = null)
         {
-            connectionString = connectionString ?? ConfigurationManager.AppSettings.Get("TestDBConnectionString");
-            OracleConnection con = new OracleConnection(connectionString);
-            con.Open();
-            return con;
+            try
+            {
+                string cns = ConfigurationManager.AppSettings.Get("TestDBConnectionString");
+                TestContext.Error.WriteLine("Trying to connect with '{0}'", cns);
+                var conn = new OracleConnection(cns);
+                conn.Open();
+                TestContext.Error.WriteLine("Connection successful!");
+                TestContext.Error.WriteLine("Connected to '{0}' on '{1}'.", conn.DatabaseName, conn.DatabaseEditionName);
+                return conn;
+            }
+            catch (Exception ex)
+            {
+                TestContext.Error.WriteLine(ex.Message);
+                TestContext.Error.WriteLine(ex.StackTrace);
+                throw new IgnoreException("Connection to Oracle database server failed", ex);
+            }
         }
 
         /// <summary>
