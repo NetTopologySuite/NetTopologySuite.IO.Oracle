@@ -22,17 +22,15 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
             try
             {
                 string cns = ConfigurationManager.AppSettings.Get("TestDBConnectionString");
-                Console.WriteLine("Trying to connect with '{0}'", cns);
-                var cnsb = new OracleConnectionStringBuilder(cns);
-                //cnsb.DataSource
-                using var conn = new OracleConnection(cnsb.ConnectionString);
+                TestContext.Error.WriteLine("Trying to connect with '{0}'", cns);
+                using var conn = new OracleConnection(cns);
                 conn.Open();
-                Console.WriteLine("Connection successful!", cns);
+                TestContext.Error.WriteLine("Connection successful!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                TestContext.Error.WriteLine(ex.Message);
+                TestContext.Error.WriteLine(ex.StackTrace);
                 Assert.Ignore("Connection to Oracle database server failed");
             }
         }
