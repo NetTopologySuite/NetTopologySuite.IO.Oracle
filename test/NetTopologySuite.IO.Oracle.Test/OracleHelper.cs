@@ -1,4 +1,4 @@
-﻿using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Client;
 using System.Configuration;
 using System.Data;
 using NUnit.Framework;
@@ -15,9 +15,9 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         /// Opens a connection to the test database
         /// </summary>
         /// <returns></returns>
-        public static OracleConnection OpenConnection()
+        public static OracleConnection OpenConnection(string connectionString = null)
         {
-            string connectionString = ConfigurationManager.AppSettings.Get("TestDBConnectionString");
+            connectionString = connectionString ?? ConfigurationManager.AppSettings.Get("TestDBConnectionString");
             OracleConnection con = new OracleConnection(connectionString);
             con.Open();
             return con;

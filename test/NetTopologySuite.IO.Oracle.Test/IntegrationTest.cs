@@ -15,6 +15,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
     public class IntegrationTest
     {
         private const string testTableName = "NTS_TEST_GEO_DATA";
+        private string _connectionString;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -26,6 +27,8 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
                 using var conn = new OracleConnection(cns);
                 conn.Open();
                 TestContext.Error.WriteLine("Connection successful!");
+                TestContext.Error.WriteLine("Connected to '{0}' on '{1}'.", conn.DatabaseName, conn.DatabaseEditionName);
+                _connectionString = cns;
             }
             catch (Exception ex)
             {
@@ -67,7 +70,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         public void TestWritingAndReadingBackFromGeometryTable(string wkt)
         {
             // Open a connection.
-            var connection = OracleHelper.OpenConnection();
+            var connection = OracleHelper.OpenConnection(_connectionString);
 
             // Make a new table.v
             string res = OracleHelper.CreateGeometryTable(connection, testTableName);
