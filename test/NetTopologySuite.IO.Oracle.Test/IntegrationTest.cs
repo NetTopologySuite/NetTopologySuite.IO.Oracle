@@ -70,7 +70,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         public void TestWritingAndReadingBackFromGeometryTable(string wkt)
         {
             // Open a connection.
-            var connection = OracleHelper.OpenConnection(_connectionString);
+            using var connection = OracleHelper.OpenConnection(_connectionString);
 
             // Make a new table.v
             string res = OracleHelper.CreateGeometryTable(connection, testTableName);
@@ -78,10 +78,10 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
             Assert.IsTrue(!string.IsNullOrWhiteSpace(res));
 
             // Write current geometry to table.
-            var geom = OracleHelper.WriteGeometryToTable(wkt, testTableName);
+            var geom = OracleHelper.WriteGeometryToTable(connection, wkt, testTableName);
 
             // Read current geometry from table.
-            var geom2 = OracleHelper.ReadGeometryFromTable(testTableName);
+            var geom2 = OracleHelper.ReadGeometryFromTable(connection, testTableName);
 
             Assert.IsTrue(geom.EqualsExact(geom2));
 
