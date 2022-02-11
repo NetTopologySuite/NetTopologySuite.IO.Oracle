@@ -17,9 +17,14 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         {
             try
             {
-                string cns = ConfigurationManager.AppSettings.Get("TestDBConnectionString");
-                TestContext.Error.WriteLine("Trying to connect with '{0}'", cns);
-                var conn = new OracleConnection(cns);
+                connectionString ??= ConfigurationManager.AppSettings.Get("TestDBConnectionString");
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    Assert.Ignore("Connection string is empty!");
+                    return null;
+                }
+                TestContext.Error.WriteLine("Trying to connect with '{0}'", connectionString);
+                var conn = new OracleConnection(connectionString);
                 conn.Open();
                 TestContext.Error.WriteLine("Connection successful!");
                 TestContext.Error.WriteLine("Connected to '{0}' on '{1}'.", conn.DatabaseName, conn.DatabaseEditionName);
