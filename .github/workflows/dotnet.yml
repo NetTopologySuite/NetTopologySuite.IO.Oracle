@@ -35,13 +35,13 @@ jobs:
         dotnet-version: 5.0.x
         
     - name: Restore dependencies
-      run: dotnet restore NetTopologySuite.IO.Oracle.sln
+      run: dotnet restore
       
     - name: Build
-      run: dotnet build NetTopologySuite.IO.Oracle.sln --no-restore
+      run: dotnet build -c Release -v minimal -p:WarningLevel=3
       
     - name: Test
-      run: dotnet test NetTopologySuite.IO.Oracle.sln --no-build --verbosity normal
+      run: dotnet test -c Release --no-build -v normal
 
     - name: Pack
       run: dotnet pack -c Release --no-build -o artifacts -p:NoWarn=NU5105
