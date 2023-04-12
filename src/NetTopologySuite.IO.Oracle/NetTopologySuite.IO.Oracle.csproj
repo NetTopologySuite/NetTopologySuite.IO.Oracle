@@ -30,7 +30,7 @@
     <PackageReference Include="NetTopologySuite" Version="[2.0.0, 3.0.0-A)" />
   </ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-		<PackageReference Include="Oracle.ManagedDataAccess" Version="21.4.0" />
+		<PackageReference Include="Oracle.ManagedDataAccess" Version="21.9.0" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
 		<PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.4" />
