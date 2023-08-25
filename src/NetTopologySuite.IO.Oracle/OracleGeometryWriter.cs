@@ -11,6 +11,7 @@ namespace NetTopologySuite.IO
     public class OracleGeometryWriter
     {
         private const int SridNull = -1;
+        private int dimension = 0;
 
         /// <summary>
         /// Property for spatial reference system
@@ -39,6 +40,8 @@ namespace NetTopologySuite.IO
             {
                 return null;
             }
+
+            this.dimension = Dimension(geometry);
 
             switch (geometry)
             {
@@ -227,7 +230,7 @@ namespace NetTopologySuite.IO
             elemInfoList.Add(pos);
             elemInfoList.Add((int)SdoEType.Line);
             elemInfoList.Add(1);
-            return pos + AddOrdinates(line.CoordinateSequence, ordinateList);
+            return AddOrdinates(line.CoordinateSequence, ordinateList);
         }
 
         private int ProcessPolygon(Polygon polygon, List<double> elemInfoList, List<double> ordinateList, int pos)
@@ -302,8 +305,7 @@ namespace NetTopologySuite.IO
         }
 
         private int AddOrdinates(CoordinateSequence sequence, List<double> ords)
-        {
-            int dimension = sequence.Dimension;
+        {            
             int numOfPoints = sequence.Count;
             for (int i = 0; i < numOfPoints; i++)
             {
@@ -319,8 +321,7 @@ namespace NetTopologySuite.IO
         }
 
         private int AddOrdinatesInReverse(CoordinateSequence sequence, List<double> ords)
-        {
-            int dimension = sequence.Dimension;
+        {            
             int numOfPoints = sequence.Count;
 
             for (int i = numOfPoints - 1; i >= 0; i--)
