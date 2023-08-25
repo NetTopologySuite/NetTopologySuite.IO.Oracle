@@ -11,6 +11,7 @@ namespace NetTopologySuite.IO
     public class OracleGeometryWriter
     {
         private const int SridNull = -1;
+        private int dimension = 0;
 
         /// <summary>
         /// Property for spatial reference system
@@ -39,6 +40,8 @@ namespace NetTopologySuite.IO
             {
                 return null;
             }
+
+            this.dimension = Dimension(geometry);
 
             switch (geometry)
             {
@@ -302,8 +305,7 @@ namespace NetTopologySuite.IO
         }
 
         private int AddOrdinates(CoordinateSequence sequence, List<double> ords)
-        {
-            int dimension = sequence.Dimension;
+        {            
             int numOfPoints = sequence.Count;
             for (int i = 0; i < numOfPoints; i++)
             {
@@ -319,8 +321,7 @@ namespace NetTopologySuite.IO
         }
 
         private int AddOrdinatesInReverse(CoordinateSequence sequence, List<double> ords)
-        {
-            int dimension = sequence.Dimension;
+        {            
             int numOfPoints = sequence.Count;
 
             for (int i = numOfPoints - 1; i >= 0; i--)
