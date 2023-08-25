@@ -230,7 +230,7 @@ namespace NetTopologySuite.IO
             elemInfoList.Add(pos);
             elemInfoList.Add((int)SdoEType.Line);
             elemInfoList.Add(1);
-            return pos + AddOrdinates(line.CoordinateSequence, ordinateList);
+            return AddOrdinates(line.CoordinateSequence, ordinateList);
         }
 
         private int ProcessPolygon(Polygon polygon, List<double> elemInfoList, List<double> ordinateList, int pos)
