@@ -72,6 +72,11 @@ namespace NetTopologySuite.IO
             var factory = _services.CreateGeometryFactory(srid);
 
             var retVal = Create(factory, gType, point, geom.ElemArray, geom.OrdinatesArray);
+
+            if (retVal == null)
+            {
+                return null;
+            }
             retVal.SRID = srid;
 
             return retVal;
@@ -271,7 +276,6 @@ namespace NetTopologySuite.IO
                         }
 
                         break;
-
                     case SdoEType.Line:
                         geom = CreateLine(factory, dim, lrs, elemInfo, i, coords);
 
@@ -405,7 +409,7 @@ namespace NetTopologySuite.IO
                                             " inconsistent with ORDINATES length " + coords.Count);
             if (etype != SdoEType.Coordinate)
                 throw new ArgumentException("ETYPE " + etype + " inconsistent with expected POINT");
-            if (!(interpretation > 1))
+            if (interpretation == 0)
             {
                 return null;
             }
