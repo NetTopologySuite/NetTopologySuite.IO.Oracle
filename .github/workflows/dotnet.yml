@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-22.04
     services:
       oracle:
-        image: gvenzl/oracle-xe:latest
+        image: gvenzl/oracle-free:latest
         env:
           ORACLE_PASSWORD: oracle
 
