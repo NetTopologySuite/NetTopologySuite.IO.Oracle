@@ -40,26 +40,27 @@ oracleParam.Value = oracleUdtGeom;
 ## Integration tests
 ### Requirements
 In order to perform the tests, a Docker container with an Oracle XE database has to be available.
-One that worked for us is [oci-oracle-xe](https://hub.docker.com/r/gvenzl/oracle-xe):   
+One that worked for us is [oci-oracle-free](https://hub.docker.com/r/gvenzl/oracle-free):   
 ```
-docker pull docker pull gvenzl/oracle-xe:latest
+docker pull docker pull gvenzl/oracle-free:latest
 ```
 
 Make sure you bind the correct port when running the image:
 ```
-docker run -d -p 1521:1521 -e ORACLE_PASSWORD=secret gvenzl/oracle-xe
+docker run -d -p 1521:1521 -e ORACLE_PASSWORD=secret gvenzl/oracle-free
 ```
 
 You should be able to connect using the following values:
+
 Property | Value
 --- | ---
 hostname | localhost
 port | 1521
-sid | xe
+sid | free
 username | system
 password | oracle
 
-Make sure you change the connectionstring in the test project's App.config to match with whatever test database you want to run the tests against. 
+Make sure you change the connectionstring in the test project's [App.config](test/NetTopologySuite.IO.Oracle.Test/App.config) to match with whatever test database you want to run the tests against. 
 The default settings assume the above docker image is running on localhost.
 
 ### Performing the tests
