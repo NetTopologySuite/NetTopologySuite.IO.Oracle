@@ -226,7 +226,7 @@ namespace NetTopologySuite.IO
             elemInfoList.Add(pos);
             elemInfoList.Add((int)SdoEType.Line);
             elemInfoList.Add(1);
-            return AddOrdinates(line.CoordinateSequence, dimension, ordinateList);
+            return pos + AddOrdinates(line.CoordinateSequence, dimension, ordinateList);
         }
 
         private static int ProcessPolygon(Polygon polygon, int dimension, List<double> elemInfoList, List<double> ordinateList, int pos)

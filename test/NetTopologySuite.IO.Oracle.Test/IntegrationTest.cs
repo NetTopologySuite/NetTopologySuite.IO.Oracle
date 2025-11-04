@@ -66,7 +66,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         [TestCase("GEOMETRYCOLLECTION(POLYGON((10 10,20 10,20 20,10 20,10 10),(5 5,5 6,6 6,6 5,5 5)),LINESTRING(10 10,20 20,50 50,34 34))")]
         [TestCase("GEOMETRYCOLLECTION(POINT(10 10),LINESTRING(10 10,20 20,50 50,34 34))")]
         [TestCase("GEOMETRYCOLLECTION(POINT(10 10),MULTIPOINT(11 12, 20 20))")]
-
+        [TestCase("GEOMETRYCOLLECTION(POINT(1 1), LINESTRING(2 2, 3 3), POLYGON((4 4, 4 6, 6 6, 6 4, 4 4)))")]
         public void TestWritingAndReadingBackFromGeometryTable(string wkt)
         {
             // Open a connection.
