@@ -282,7 +282,7 @@ namespace NetTopologySuite.IO
             for (int i = 0; i < cnt; i++)
             {
                 var line = (LineString)multiLineString.GetGeometryN(i);
-                pos += ProcessLinear(line, dimension, elemInfoList, ordinateList, pos);
+                pos = ProcessLinear(line, dimension, elemInfoList, ordinateList, pos);
             }
 
             return pos;
