@@ -10,8 +10,8 @@ namespace NetTopologySuite.IO.Oracle.Test
     {
 
         private static readonly OracleGeometryReader or = new OracleGeometryReader(NtsGeometryServices.Instance);
-        private static readonly WKTReader wr = new WKTReader { IsOldNtsCoordinateSyntaxAllowed = false };
-
+        private static readonly WKTReader wr = new WKTReader { IsOldNtsCoordinateSyntaxAllowed = false,  };
+        private static readonly WKTWriter ww = new WKTWriter(4);
         /// <summary>
         /// 
         /// </summary>
@@ -37,7 +37,13 @@ namespace NetTopologySuite.IO.Oracle.Test
         [TestCase("POINT(10 10)", -1)]
         [TestCase("POINT(10 10)", 4326)]
         [TestCase("POINT Z(10 10 0)", -1)]
+        [TestCase("POINT Z(10 10 0)", 4326)]
         [TestCase("POINT Z(10 10 20)", -1)]
+        [TestCase("POINT Z(10 10 20)", 4326)]
+        [TestCase("POINT M(10 10 30)", -1)]
+        [TestCase("POINT M(10 10 30)", 4326)]
+        [TestCase("POINT ZM(10 10 20 30)", -1)]
+        [TestCase("POINT ZM(10 10 20 30)", 4326)]
         [TestCase("MULTIPOINT(11 12)", -1)]
         [TestCase("MULTIPOINT(11 12, 20 20)", -1)]
         [TestCase("MULTIPOINT Z(11 12 12, 20 20 20)", -1)]
@@ -62,20 +68,18 @@ namespace NetTopologySuite.IO.Oracle.Test
         [TestCase("GEOMETRYCOLLECTION(POINT(10 10),MULTIPOINT(11 12, 20 20))", -1)]
         public void BasicConversion(string wkt, int srid)
         {
+            wr.DefaultSRID = srid;
             var geom = wr.Read(wkt);
-            string parsed = geom.AsText();
-            var regeom = wr.Read(parsed);
-            string reparsed = regeom.AsText();
+            Assert.That(geom.SRID, Is.EqualTo(srid));
 
-            geom.SRID = srid;
-            regeom.SRID = srid;
+            string parsed = ww.Write(geom);
 
-            Assert.That(geom.EqualsExact(regeom));
-            Assert.That(reparsed, Is.EqualTo(parsed));
+            var t = new OracleGeometryWriter().Write(geom);
+            var geomRead = or.Read(t);
 
-            var t = new OracleGeometryWriter().Write(regeom);
-            var regeom3 = or.Read(t);
-            Assert.That(geom.EqualsExact(regeom3));
+            Assert.That(geomRead.EqualsExact(geom), Is.True);
+            Assert.That(geomRead.SRID, Is.EqualTo(geom.SRID));
+            Assert.That(ww.Write(geomRead), Is.EqualTo(parsed));
         }
 
         /// <summary>
@@ -98,6 +102,16 @@ namespace NetTopologySuite.IO.Oracle.Test
             var t = new OracleGeometryWriter().Write(geom);
             var regeom = or.Read(t);
             Assert.That(result.EqualsExact(regeom));
+        }
+
+        [Test]
+        public void TestIssue23()
+        {
+            var rdr = new WKTReader();
+            rdr.DefaultSRID = 4326;
+            var geom = rdr.Read("GEOMETRYCOLLECTION(POINT(1 1), LINESTRING(2 2, 3 3), POLYGON((4 4, 4 6, 6 6, 6 4, 4 4)))");
+            var t = new OracleGeometryWriter().Write(geom);
+            Assert.That(true);
         }
 
     }

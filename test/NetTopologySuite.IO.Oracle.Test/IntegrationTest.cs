@@ -47,6 +47,8 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         [TestCase("POINT(10 10)")]
         [TestCase("POINT Z(10 10 0)")]
         [TestCase("POINT Z(10 10 20)")]
+        [TestCase("POINT M(10 10 30)")]
+        [TestCase("POINT ZM(10 10 20 30)")]
         [TestCase("MULTIPOINT(11 12, 20 20)")]
         [TestCase("MULTIPOINT Z(11 12 12, 20 20 20)")]
         [TestCase("LINESTRING(10 10,20 20,50 50,34 34)")]

@@ -77,8 +77,6 @@ namespace NetTopologySuite.IO
             {
                 return null;
             }
-            retVal.SRID = srid;
-
             return retVal;
         }
 
@@ -94,7 +92,7 @@ namespace NetTopologySuite.IO
             }
             else
             {
-                dim = Math.Min(gType / 1000, 3);
+                dim = Math.Min(gType / 1000, 4);
             }
 
             if (dim == 0)
@@ -182,7 +180,7 @@ namespace NetTopologySuite.IO
                 return pt;
             }
 
-            int len = dim + lrs;
+            int len = dim;
 
             if ((len == 0 && ordinates.Length != 0) || (len != 0 && ((ordinates.Length % len) != 0)))
             {
@@ -204,11 +202,16 @@ namespace NetTopologySuite.IO
                 switch (len)
                 {
                     case 2:
-                        pts.Add(new CoordinateZ(ordinates[offset], ordinates[offset + 1], double.NaN));
+                        pts.Add(new Coordinate(ordinates[offset], ordinates[offset + 1]));
                         break;
                     case 3:
-                        pts.Add(new CoordinateZ(ordinates[offset], ordinates[offset + 1],
-                                                ordinates[offset + 2]));
+                        if (lrs == 0)
+                            pts.Add(new CoordinateZ(ordinates[offset], ordinates[offset + 1], ordinates[offset + 2]));
+                        else
+                            pts.Add(new CoordinateM(ordinates[offset], ordinates[offset + 1], ordinates[offset + 2]));
+                        break;
+                    case 4:
+                        pts.Add(new CoordinateZM(ordinates[offset], ordinates[offset + 1], ordinates[offset + 2], ordinates[offset + 3]));
                         break;
                 }
 
@@ -598,7 +601,7 @@ namespace NetTopologySuite.IO
                 return null;
             }
 
-            int len = (dim + lrs);
+            int len = dim;
             int start = (sOffset - 1) / len;
             int eOffset = StartingOffset(elemInfo, elemIndex + 1); // -1 for end
 

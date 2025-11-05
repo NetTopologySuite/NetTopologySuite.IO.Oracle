@@ -236,9 +236,10 @@ namespace NetTopologySuite.IO
             elemInfoList.Add(1);
 
             var exteriorRingCoords = polygon.ExteriorRing.CoordinateSequence;
-            pos += Algorithm.Orientation.IsCCW(exteriorRingCoords)
+            pos += AddOrdinates(exteriorRingCoords, dimension, ordinateList, LinearRingOrientation.CounterClockwise);
+                    /* Algorithm.Orientation.IsCCW(exteriorRingCoords)
                 ? AddOrdinates(exteriorRingCoords, dimension, ordinateList)
-                : AddOrdinatesInReverse(exteriorRingCoords, dimension, ordinateList);
+                : AddOrdinatesInReverse(exteriorRingCoords, dimension, ordinateList);*/
 
             int interiorRingCount = polygon.NumInteriorRings;
             for (int i = 0; i < interiorRingCount; i++)
@@ -248,9 +249,10 @@ namespace NetTopologySuite.IO
                 elemInfoList.Add(1);
 
                 var interiorRingCoords = polygon.GetInteriorRingN(i).CoordinateSequence;
-                pos += Algorithm.Orientation.IsCCW(interiorRingCoords)
+                pos += AddOrdinates(interiorRingCoords, dimension, ordinateList, LinearRingOrientation.Clockwise);
+                    /*Algorithm.Orientation.IsCCW(interiorRingCoords)
                     ? AddOrdinatesInReverse(interiorRingCoords, dimension, ordinateList)
-                    : AddOrdinates(interiorRingCoords, dimension, ordinateList);
+                    : AddOrdinates(interiorRingCoords, dimension, ordinateList);*/
             }
 
             return pos;
@@ -300,20 +302,28 @@ namespace NetTopologySuite.IO
             return pos;
         }
 
-        private static int AddOrdinates(CoordinateSequence sequence, int dimension, List<double> ords)
-        {            
-            int numOfPoints = sequence.Count;
-            for (int i = 0; i < numOfPoints; i++)
+        //private enum RingOrientation 
+
+        private static int AddOrdinates(CoordinateSequence sequence, int dimension, List<double> ords,
+            LinearRingOrientation orientation = LinearRingOrientation.DontCare)
+        {
+            switch (orientation)
             {
-                ords.Add((double)sequence.GetX(i));
-                ords.Add((double)sequence.GetY(i));
-                if (dimension == 3)
-                {
-                    ords.Add((double)sequence.GetZ(i));
-                }
+                case LinearRingOrientation.CounterClockwise:
+                    if (!Algorithm.Orientation.IsCCW(sequence)) sequence = sequence.Reversed();
+                    break;
+                case LinearRingOrientation.Clockwise:
+                    if (Algorithm.Orientation.IsCCW(sequence)) sequence = sequence.Reversed();
+                    break;
             }
 
-            return numOfPoints * dimension;
+            for (int i = 0; i < sequence.Count; i++)
+            {
+                for(int j = 0; j < sequence.Dimension; j++)
+                    ords.Add(sequence.GetOrdinate(i, j));
+            }
+
+            return sequence.Count * dimension;
         }
 
         private static int AddOrdinatesInReverse(CoordinateSequence sequence, int dimension, List<double> ords)
@@ -322,12 +332,8 @@ namespace NetTopologySuite.IO
 
             for (int i = numOfPoints - 1; i >= 0; i--)
             {
-                ords.Add((double)sequence.GetX(i));
-                ords.Add((double)sequence.GetY(i));
-                if (dimension == 3)
-                {
-                    ords.Add((double)sequence.GetZ(i));
-                }
+                for (int j = 0; j < sequence.Dimension; j++)
+                    ords.Add(sequence.GetOrdinate(i, j));
             }
 
             return numOfPoints * dimension;
@@ -335,15 +341,16 @@ namespace NetTopologySuite.IO
 
         private static int GType(Geometry geom, out int dimension)
         {
-            dimension = Dimension(geom);
-            return dimension * 1000 + (int)Template(geom);
+            DimensionAndMeasure(geom, out dimension, out int measure);
+            return dimension * 1000 + measure * 100 + (int)Template(geom);
         }
 
-        private static int Dimension(Geometry geom)
+        private static void DimensionAndMeasure(Geometry geom, out int dimension, out int measure)
         {
-            var sdd = new SpatialDimensionDeterminator();
+            var sdd = new DimensionAndMeasureDeterminator();
             geom.Apply(sdd);
-            return sdd.NumSpatialDimensions;
+            dimension = sdd.Dimension;
+            measure = sdd.Measure;
         }
 
         private static SdoGTemplate Template(Geometry geom)
@@ -382,14 +389,22 @@ namespace NetTopologySuite.IO
             }
         }
 
-        private class SpatialDimensionDeterminator : IEntireCoordinateSequenceFilter
+        private class DimensionAndMeasureDeterminator : IEntireCoordinateSequenceFilter
         {
             public void Filter(CoordinateSequence sequence)
             {
-                NumSpatialDimensions = sequence.Dimension - sequence.Measures;
+                bool hasMeasure = sequence.Measures > 0;
+                Dimension = Math.Min(sequence.Dimension, 4);
+                if (hasMeasure)
+                    Measure = Dimension;
+
                 Done = true;
             }
-            public int NumSpatialDimensions { get; private set; } = 2;
+
+            public int Dimension { get; private set; } = 2;
+
+            public int Measure { get; private set; } = 0;
+
             public bool Done { get; private set; }
             public bool GeometryChanged => false;
         }
