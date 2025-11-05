@@ -48,7 +48,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         {
             DropGeometryTable(connection, tableName);
 
-            string queryString = $"CREATE TABLE {tableName} (data MSYS.SDO_GEOMETRY)";
+            string queryString = $"CREATE TABLE \"{tableName}\" (data MSYS.SDO_GEOMETRY)";
             using var command = new OracleCommand(queryString, connection);
             command.ExecuteNonQuery();
 
@@ -66,7 +66,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
         {
             // Remove 'GEO_DATA' table
             string queryString = $@"BEGIN
-                EXECUTE IMMEDIATE 'DROP TABLE {tableName}';
+                EXECUTE IMMEDIATE 'DROP TABLE ""{tableName}""';
                 EXCEPTION
                     WHEN OTHERS THEN
                         IF SQLCODE != -942 THEN
@@ -94,7 +94,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
             // Drop & Create Geometry table.
             CreateGeometryTable(connection, testTableName);
 
-            string queryString = $"INSERT INTO {testTableName} (data) VALUES (:geo)";
+            string queryString = $"INSERT INTO \"{testTableName}\" (data) VALUES (:geo)";
 
             using var command = new OracleCommand(queryString, connection);
             var geometryParam = new OracleParameter()
@@ -142,7 +142,7 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
             if (wasClosed) connection.Open();
 
             // Write query string & command
-            string queryString = $"SELECT * FROM {testTableName}";
+            string queryString = $"SELECT * FROM \"{testTableName}\"";
             using var command = new OracleCommand(queryString, connection);
 
             var geometryParam = new OracleParameter();

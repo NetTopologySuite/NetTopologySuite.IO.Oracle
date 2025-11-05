@@ -14,7 +14,6 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
     [TestFixture]
     public class IntegrationTest
     {
-        private const string testTableName = "NTS_TEST_GEO_DATA";
         private string _connectionString;
 
         [OneTimeSetUp]
@@ -75,20 +74,21 @@ namespace NetTopologySuite.IO.Oracle.Connection.Test
             using var connection = OracleHelper.OpenConnection(_connectionString);
 
             // Make a new table.v
-            string res = OracleHelper.CreateGeometryTable(connection, testTableName);
+            string tableName = $"tbl_{Guid.NewGuid()}".Replace('-', '_');
+            string res = OracleHelper.CreateGeometryTable(connection, tableName);
             // TODO this is pretty dumb, need to check exact output
             Assert.That(!string.IsNullOrWhiteSpace(res));
 
             // Write current geometry to table.
-            var geom = OracleHelper.WriteGeometryToTable(connection, wkt, testTableName);
+            var geom = OracleHelper.WriteGeometryToTable(connection, wkt, tableName);
 
             // Read current geometry from table.
-            var geom2 = OracleHelper.ReadGeometryFromTable(connection, testTableName);
+            var geom2 = OracleHelper.ReadGeometryFromTable(connection, tableName);
 
             Assert.That(geom.EqualsExact(geom2));
 
             // Drop Geometry table
-            OracleHelper.DropGeometryTable(connection, testTableName);
+            OracleHelper.DropGeometryTable(connection, tableName);
         }
     }
 }
