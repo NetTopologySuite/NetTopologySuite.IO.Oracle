@@ -100,7 +100,7 @@ namespace NetTopologySuite.IO
 
             if (dim < 2)
             {
-                throw new ArgumentException("Dimension D:" + dim + " is not valid for JTS. " +
+                throw new ArgumentException("Dimension D:" + dim + " is not valid for NTS. " +
                                             "Either specify a dimension or use Oracle Locator Version 9i or later");
             }
 
@@ -293,12 +293,12 @@ namespace NetTopologySuite.IO
 
                     case SdoEType.PolygonInterior:
                         throw new ArgumentException(
-                            "ETYPE 2003 (Polygon Interior) no expected in a GeometryCollection" +
+                            "ETYPE 2003 (Polygon Interior) not expected in a GeometryCollection" +
                          "(2003 is used to represent polygon holes, in a 1003 polygon exterior)");
 
                     default:
                         throw new ArgumentException("ETYPE " + etype +
-                                                 " not representable as a JTS Geometry." +
+                                                 " not representable as a NTS Geometry." +
                                                  "(Custom and Compound Straight and Curved Geometries not supported)");
                 }
                 if (cont)
@@ -558,7 +558,7 @@ namespace NetTopologySuite.IO
             {
                 throw new ArgumentException("ELEM_INFO INTERPRETAION " +
                                          interpretation + " not supported" +
-                                         "by JTS LineString.  Straight edges" +
+                                         "by NTS LineString.  Straight edges" +
                                          "( ELEM_INFO INTERPRETAION 1) is supported");
             }
 

@@ -382,7 +382,7 @@ namespace NetTopologySuite.IO
                     return SdoGTemplate.Collection;
 
                 default:
-                    throw new ArgumentException("Cannot encode JTS "
+                    throw new ArgumentException("Cannot encode NTS "
                         + geom.GeometryType + " as SDO_GTEMPLATE "
                         + "(Limitied to Point, Line, Polygon, GeometryCollection, MultiPoint,"
                         + " MultiLineString and MultiPolygon)");
