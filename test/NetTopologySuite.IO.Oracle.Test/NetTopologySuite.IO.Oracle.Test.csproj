@@ -25,4 +25,8 @@
     <PackageReference Update="NUnit3TestAdapter" Version="5.0.0" />
   </ItemGroup>
 
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild" Condition=" '$(TargetFramework)' == 'net8' ">
+    <Copy SourceFiles="App.config" DestinationFiles="$(OutDir)\testhost.dll.config" />
+  </Target>
+  
 </Project>
