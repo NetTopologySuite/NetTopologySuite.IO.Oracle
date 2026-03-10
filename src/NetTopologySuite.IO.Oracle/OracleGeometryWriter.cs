@@ -15,8 +15,28 @@ namespace NetTopologySuite.IO
         /// <summary>
         /// Property for spatial reference system
         /// </summary>
-        /// <remarks>Only used when set to a value other than <c>-1</c>. Otherwise the SRID property of the geometry to write is used.</remarks>
+        /// <remarks>
+        /// This is only used when set to a value other than <c>-1</c>.
+        /// Otherwise the SRID property of the geometry to write is used.
+        /// <para/>
+        /// When the <see cref="OracleGeometrySettings.SRIDNullValue"/> property is set,
+        /// and the the resulting SRID value is equal to it, the <c>SDO_GEOMETRY</c> will
+        /// have <c>null</c> as spatial reference id.
+        /// </remarks>
         public int SRID { get; set; } = SridNull;
+
+        /// <summary>
+        /// Determine the SRID value to assign to SDO_GEOMETRY
+        /// </summary>
+        /// <param name="geometrySRID">The SRID of the geometry</param>
+        /// <returns>An SRID value</returns>
+        private int? GetSRID(int geometrySRID)
+        {
+            int? srid = SRID != SridNull ? SRID : geometrySRID;
+            if (OracleGeometrySettings.SRIDNullValue.HasValue &&
+                OracleGeometrySettings.SRIDNullValue.Value == srid) srid = null;
+            return srid;
+        }
 
         /// <summary>
         /// Converts an Geometry to the corresponding Oracle UDT of type SdoGeometry
@@ -70,7 +90,7 @@ namespace NetTopologySuite.IO
             return new SdoGeometry()
             {
                 SdoGtype = gtype,
-                Sdo_Srid = SRID != SridNull ? SRID : point.SRID,
+                Sdo_Srid = GetSRID(point.SRID),
                 ElemArray = elemInfoList.ToArray(),
                 OrdinatesArray = ordinateList.ToArray(),
             };
@@ -87,7 +107,7 @@ namespace NetTopologySuite.IO
             return new SdoGeometry()
             {
                 SdoGtype = gtype,
-                Sdo_Srid = SRID != SridNull ? SRID : lineString.SRID,
+                Sdo_Srid = GetSRID(lineString.SRID),
                 ElemArray = elemInfoList.ToArray(),
                 OrdinatesArray = ordinateList.ToArray(),
             };
@@ -104,7 +124,7 @@ namespace NetTopologySuite.IO
             return new SdoGeometry
             {
                 SdoGtype = gtype,
-                Sdo_Srid = SRID != SridNull ? SRID : polygon.SRID,
+                Sdo_Srid = GetSRID(polygon.SRID),
                 ElemArray = elemInfoList.ToArray(),
                 OrdinatesArray = ordinateList.ToArray(),
             };
@@ -121,7 +141,7 @@ namespace NetTopologySuite.IO
             return new SdoGeometry
             {
                 SdoGtype = gtype,
-                Sdo_Srid = SRID != SridNull ? SRID : multiPoint.SRID,
+                Sdo_Srid = GetSRID(multiPoint.SRID),
                 ElemArray = elemInfoList.ToArray(),
                 OrdinatesArray = ordinateList.ToArray(),
             };
@@ -138,7 +158,7 @@ namespace NetTopologySuite.IO
             return new SdoGeometry
             {
                 SdoGtype = gtype,
-                Sdo_Srid = SRID != SridNull ? SRID : multiLineString.SRID,
+                Sdo_Srid = GetSRID(multiLineString.SRID),
                 ElemArray = elemInfoList.ToArray(),
                 OrdinatesArray = ordinateList.ToArray(),
             };
@@ -155,7 +175,7 @@ namespace NetTopologySuite.IO
             return new SdoGeometry
             {
                 SdoGtype = gtype,
-                Sdo_Srid = SRID != SridNull ? SRID : multiPolygon.SRID,
+                Sdo_Srid = GetSRID(multiPolygon.SRID),
                 ElemArray = elemInfoList.ToArray(),
                 OrdinatesArray = ordinateList.ToArray(),
             };
@@ -207,7 +227,7 @@ namespace NetTopologySuite.IO
             return new SdoGeometry
             {
                 SdoGtype = gtype,
-                Sdo_Srid = SRID != SridNull ? SRID : geometryCollection.SRID,
+                Sdo_Srid = GetSRID(geometryCollection.SRID),
                 ElemArray = elemInfoList.ToArray(),
                 OrdinatesArray = ordinateList.ToArray(),
             };

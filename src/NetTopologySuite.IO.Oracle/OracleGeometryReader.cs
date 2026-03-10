@@ -65,11 +65,19 @@ namespace NetTopologySuite.IO
             Debug.Assert(geom.SdoGtype.HasValue);
             int gType = (int)geom.SdoGtype;
 
-            Debug.Assert(geom.Sdo_Srid.HasValue);
-            int srid = (int)geom.Sdo_Srid;
-
             var point = geom.Point;
-            var factory = _services.CreateGeometryFactory(srid);
+
+            // Create or retrieve a geometry factory:
+            // 1. If SDO_GEOMETRY has a SRID value applied we use that.
+            // 2. Otherwise use the SRIDNullValue if it is set, or
+            // 3. use the SRID value assigned as default to NtsGeometryServices.Instance
+            GeometryFactory factory;
+            if (geom.Sdo_Srid.HasValue)
+                factory = _services.CreateGeometryFactory((int)geom.Sdo_Srid);
+            else if (OracleGeometrySettings.SRIDNullValue.HasValue)
+                factory = _services.CreateGeometryFactory(OracleGeometrySettings.SRIDNullValue.Value);
+            else
+                factory = _services.CreateGeometryFactory();
 
             var retVal = Create(factory, gType, point, geom.ElemArray, geom.OrdinatesArray);
 
@@ -419,9 +427,7 @@ namespace NetTopologySuite.IO
                 throw new ArgumentException("ETYPE " + etype + " inconsistent with expected POINT");
 
             if (interpretation == 0)
-            {
                 return null;
-            }
 
             int start = (sOffset - 1) / dim;
 

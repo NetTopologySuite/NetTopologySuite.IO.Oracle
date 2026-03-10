@@ -1,3 +1,5 @@
+using NetTopologySuite.Geometries;
+using NetTopologySuite.Geometries.Implementation;
 using NUnit.Framework;
 
 namespace NetTopologySuite.IO.Oracle.Test
@@ -147,5 +149,38 @@ namespace NetTopologySuite.IO.Oracle.Test
             Assert.That(nts19c.EqualsExact(nts23ai));
         }
 
+        [TestCase(666, null, null, null, 666)]
+        [TestCase(666, null, 333, null, 666)]
+        [TestCase(666, 333, null, null, 333)]
+        [TestCase(666, null, 333, 333, 333)]
+        [TestCase(666, null, 333, 111, 111)]
+        [TestCase(666, 9, 333, 111, 9)]
+        public void TestIssue27(int sridServices, int? sridWriter, int? sridNull, int? sridGeometry, int expectedSrid)
+        {
+            var services = new NtsGeometryServices(CoordinateArraySequenceFactory.Instance, new Geometries.PrecisionModel(), sridServices);
+
+            // Create the writer
+            var writer = new OracleGeometryWriter();
+            if (sridWriter.HasValue) writer.SRID = sridWriter.Value;
+
+            // Set SRID value to be interpreted as NULL
+            OracleGeometrySettings.SRIDNullValue = sridNull;
+
+            // Create the geometry factory
+            var factory = sridGeometry.HasValue
+                ? services.CreateGeometryFactory(sridGeometry.Value)
+                : services.CreateGeometryFactory();
+
+            // Create and write point
+            var geomS = factory.CreatePoint(new Coordinate(10, 10));
+            var sdoGeom = writer.Write(geomS);
+
+            // Create reader and read point
+            var reader = new OracleGeometryReader(services);
+            var geomD = reader.Read(sdoGeom);
+
+            // Assert SRID has expected value
+            Assert.That(geomD.SRID, Is.EqualTo(expectedSrid));
+        }
     }
 }
