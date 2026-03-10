@@ -4,7 +4,7 @@ namespace NetTopologySuite.IO
     /// Utility class for common settings around <see cref="OracleGeometryReader"/>
     /// and <see cref="OracleGeometryWriter"/>.
     /// </summary>
-    public class OracleGeometrySettings
+    public static class OracleGeometrySettings
     {
         /// <summary>
         /// Gets or sets a value indicating the SRID value that indicates <c>NULL</c> for <c>SDO_GEOMETRY.SDO_SRID</c>.
