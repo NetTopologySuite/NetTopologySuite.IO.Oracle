@@ -82,7 +82,8 @@ namespace NetTopologySuite.IO
 
         private Geometry Create(GeometryFactory factory, int gType, SdoPoint point, double[] elemInfo, double[] ordinates)
         {
-            int lrs = (gType % 1000) / 100;
+            // linear referencing measure dimension (0, 3 or 4)
+            int lrm = gType % 1000 / 100;
 
             // find the dimension: represented by the smaller of the two dimensions
             int dim;
@@ -106,62 +107,62 @@ namespace NetTopologySuite.IO
 
             // extract the geometry template type
             // this is represented as the rightmost two digits
-            int geomTemplate = gType - (dim * 1000) - (lrs * 100);
+            int geomTemplate = gType - (dim * 1000) - (lrm * 100);
 
             //CoordinateSequence coords = null;
             List<Coordinate> coords;
 
-            if (lrs == 0 && geomTemplate == 1 && point != null && elemInfo == null)
+            if (lrm == 0 && geomTemplate == 1 && point != null && elemInfo == null)
             {
                 // Single Coordinate Type Optimization
                 Debug.Assert(point.X != null, "point.X != null");
                 Debug.Assert(point.Y != null, "point.Y != null");
                 if (dim == 2)
                 {
-                    coords = Coordinates(dim, lrs, geomTemplate, new[] { point.X.Value, point.Y.Value });
+                    coords = Coordinates(dim, lrm, geomTemplate, new[] { point.X.Value, point.Y.Value });
                 }
                 else
                 {
                     Debug.Assert(point.Z != null, "point.Z != null");
-                    coords = Coordinates(dim, lrs, geomTemplate,
+                    coords = Coordinates(dim, lrm, geomTemplate,
                                          new[] { point.X.Value, point.Y.Value, point.Z.Value });
                 }
                 elemInfo = new double[] { 1, (int) SdoEType.Coordinate, 1 };
             }
             else
             {
-                coords = Coordinates(dim, lrs, geomTemplate, ordinates);
+                coords = Coordinates(dim, lrm, geomTemplate, ordinates);
             }
 
             switch ((SdoGTemplate)geomTemplate)
             {
                 case SdoGTemplate.Coordinate:
-                    return CreatePoint(factory, dim, lrs, elemInfo, 0, coords);
+                    return CreatePoint(factory, dim, elemInfo, 0, coords);
 
                 case SdoGTemplate.Line:
-                    return CreateLine(factory, dim, lrs, elemInfo, 0, coords);
+                    return CreateLine(factory, dim, elemInfo, 0, coords);
 
                 case SdoGTemplate.Polygon:
-                    return CreatePolygon(factory, dim, lrs, elemInfo, 0, coords);
+                    return CreatePolygon(factory, dim, elemInfo, 0, coords);
 
                 case SdoGTemplate.MultiPoint:
-                    return CreateMultiPoint(factory, dim, lrs, elemInfo, 0, coords);
+                    return CreateMultiPoint(factory, dim, elemInfo, 0, coords, false);
 
                 case SdoGTemplate.MultiLine:
-                    return CreateMultiLine(factory, dim, lrs, elemInfo, 0, coords, -1);
+                    return CreateMultiLine(factory, dim, elemInfo, 0, coords, -1);
 
                 case SdoGTemplate.MultiPolygon:
-                    return CreateMultiPolygon(factory, dim, lrs, elemInfo, 0, coords, -1);
+                    return CreateMultiPolygon(factory, dim, elemInfo, 0, coords, -1);
 
                 case SdoGTemplate.Collection:
-                    return CreateCollection(factory, dim, lrs, elemInfo, 0, coords, -1);
+                    return CreateCollection(factory, dim, elemInfo, 0, coords, -1);
 
                 default:
                     return null;
             }
         }
 
-        private static List<Coordinate> Coordinates(int dim, int lrs, int gtemplate, double[] ordinates)
+        private static List<Coordinate> Coordinates(int dim, int lrm, int gtemplate, double[] ordinates)
         {
             if ((ordinates == null) || (ordinates.Length == 0))
             {
@@ -171,7 +172,7 @@ namespace NetTopologySuite.IO
             //
             // POINT_TYPE Special Case
             //
-            if ((dim == 2) && (lrs == 0) && (gtemplate == 01) && (ordinates.Length == 3))
+            if ((dim == 3) && (lrm == 0) && (gtemplate == 01) && (ordinates.Length == 3))
             {
                 var pt = new List<Coordinate>(1)
                 {
@@ -185,7 +186,7 @@ namespace NetTopologySuite.IO
             if ((len == 0 && ordinates.Length != 0) || (len != 0 && ((ordinates.Length % len) != 0)))
             {
                 throw new ArgumentException("Dimension D:" + dim + " and L:" +
-                                         lrs + " denote Coordinates " + "of " + len +
+                                         lrm + " denote Coordinates " + "of " + len +
                                          " ordinates. This cannot be resolved with" +
                                          "an ordinate array of length " + ordinates.Length);
             }
@@ -196,6 +197,10 @@ namespace NetTopologySuite.IO
             // dimension and measures from a mask array in the future
             var pts = new List<Coordinate>(length);
 
+            // Determine offsets for z- and m-ordinate values
+            int zoffset = lrm == 3 ? 3 : 2;
+            int moffset = lrm - 1;
+
             for (int i = 0; i < length; i++)
             {
                 int offset = i * len;
@@ -205,13 +210,13 @@ namespace NetTopologySuite.IO
                         pts.Add(new Coordinate(ordinates[offset], ordinates[offset + 1]));
                         break;
                     case 3:
-                        if (lrs == 0)
-                            pts.Add(new CoordinateZ(ordinates[offset], ordinates[offset + 1], ordinates[offset + 2]));
-                        else
-                            pts.Add(new CoordinateM(ordinates[offset], ordinates[offset + 1], ordinates[offset + 2]));
+                        if (lrm == 0)
+                            pts.Add(new CoordinateZ(ordinates[offset], ordinates[offset + 1], ordinates[offset + zoffset]));
+                        else if (lrm == 3)
+                            pts.Add(new CoordinateM(ordinates[offset], ordinates[offset + 1], ordinates[offset + moffset]));
                         break;
                     case 4:
-                        pts.Add(new CoordinateZM(ordinates[offset], ordinates[offset + 1], ordinates[offset + 2], ordinates[offset + 3]));
+                        pts.Add(new CoordinateZM(ordinates[offset], ordinates[offset + 1], ordinates[offset + zoffset], ordinates[offset + moffset]));
                         break;
                 }
 
@@ -231,7 +236,7 @@ namespace NetTopologySuite.IO
             return pts;
         }
 
-        private GeometryCollection CreateCollection(GeometryFactory factory, int dim, int lrs, double[] elemInfo, int elemIndex,
+        private GeometryCollection CreateCollection(GeometryFactory factory, int dim, double[] elemInfo, int elemIndex,
                                                     List<Coordinate> coords, int numGeom)
         {
 
@@ -266,11 +271,11 @@ namespace NetTopologySuite.IO
 
                         if (interpretation == 1)
                         {
-                            geom = CreatePoint(factory, dim, lrs, elemInfo, i, coords);
+                            geom = CreatePoint(factory, dim, elemInfo, i, coords);
                         }
                         else if (interpretation > 1)
                         {
-                            geom = CreateMultiPoint(factory, dim, lrs, elemInfo, i, coords);
+                            geom = CreateMultiPoint(factory, dim, elemInfo, i, coords, true);
                         }
                         else
                         {
@@ -280,13 +285,13 @@ namespace NetTopologySuite.IO
 
                         break;
                     case SdoEType.Line:
-                        geom = CreateLine(factory, dim, lrs, elemInfo, i, coords);
+                        geom = CreateLine(factory, dim, elemInfo, i, coords);
 
                         break;
 
                     case SdoEType.Polygon:
                     case SdoEType.PolygonExterior:
-                        geom = CreatePolygon(factory, dim, lrs, elemInfo, i, coords);
+                        geom = CreatePolygon(factory, dim, elemInfo, i, coords);
                         i += ((Polygon)geom).NumInteriorRings;
 
                         break;
@@ -310,7 +315,7 @@ namespace NetTopologySuite.IO
             return geoms;
         }
 
-        private MultiPolygon CreateMultiPolygon(GeometryFactory factory, int dim, int lrs, double[] elemInfo, int elemIndex,
+        private MultiPolygon CreateMultiPolygon(GeometryFactory factory, int dim, double[] elemInfo, int elemIndex,
                                                 List<Coordinate> coords, int numGeom)
         {
 
@@ -341,7 +346,7 @@ namespace NetTopologySuite.IO
             {
                 if ((etype == SdoEType.Polygon) || (etype == SdoEType.PolygonExterior))
                 {
-                    var poly = CreatePolygon(factory, dim, lrs, elemInfo, i, coords);
+                    var poly = CreatePolygon(factory, dim, elemInfo, i, coords);
                     i += poly.NumInteriorRings; // skip interior rings
                     list.Add(poly);
                 }
@@ -357,7 +362,7 @@ namespace NetTopologySuite.IO
             return polys;
         }
 
-        private MultiLineString CreateMultiLine(GeometryFactory factory, int dim, int lrs, double[] elemInfo, int elemIndex,
+        private MultiLineString CreateMultiLine(GeometryFactory factory, int dim, double[] elemInfo, int elemIndex,
                                                 List<Coordinate> coords, int numGeom)
         {
 
@@ -387,7 +392,7 @@ namespace NetTopologySuite.IO
             {
                 if (etype == SdoEType.Line)
                 {
-                    list.Add(CreateLine(factory, dim, lrs, elemInfo, i, coords));
+                    list.Add(CreateLine(factory, dim, elemInfo, i, coords));
                 }
                 else
                 {
@@ -401,7 +406,7 @@ namespace NetTopologySuite.IO
             return lines;
         }
 
-        private MultiPoint CreateMultiPoint(GeometryFactory factory, int dim, int lrs, double[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private MultiPoint CreateMultiPoint(GeometryFactory factory, int dim, double[] elemInfo, int elemIndex, List<Coordinate> coords, bool inCollection)
         {
             int sOffset = StartingOffset(elemInfo, elemIndex);
             var etype = EType(elemInfo, elemIndex);
@@ -412,12 +417,13 @@ namespace NetTopologySuite.IO
                                             " inconsistent with ORDINATES length " + coords.Count);
             if (etype != SdoEType.Coordinate)
                 throw new ArgumentException("ETYPE " + etype + " inconsistent with expected POINT");
+
             if (interpretation == 0)
             {
                 return null;
             }
 
-            int len = dim + lrs;
+            int start = (sOffset - 1) / dim;
 
             int start = (sOffset - 1) / len;
             int end = start + interpretation;
@@ -427,7 +433,7 @@ namespace NetTopologySuite.IO
             return points;
         }
 
-        private Polygon CreatePolygon(GeometryFactory factory, int dim, int lrs, double[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private Polygon CreatePolygon(GeometryFactory factory, int dim, double[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
 
             int sOffset = StartingOffset(elemInfo, elemIndex);
@@ -450,7 +456,7 @@ namespace NetTopologySuite.IO
                 return null;
             }
 
-            var exteriorRing = CreateLinearRing(factory, dim, lrs, elemInfo, elemIndex, coords);
+            var exteriorRing = CreateLinearRing(factory, dim, elemInfo, elemIndex, coords);
 
             var rings = new List<LinearRing>();
 
@@ -459,14 +465,14 @@ namespace NetTopologySuite.IO
             {
                 if (etype == SdoEType.PolygonInterior)
                 {
-                    rings.Add(CreateLinearRing(factory, dim, lrs, elemInfo, i, coords));
+                    rings.Add(CreateLinearRing(factory, dim, elemInfo, i, coords));
                 }
                 else if (etype == SdoEType.Polygon)
                 {
                     // need to test Clockwiseness of Ring to see if it is
                     // interior or not - (use POLYGON_INTERIOR to avoid pain)
 
-                    var ring = CreateLinearRing(factory, dim, lrs, elemInfo, i, coords);
+                    var ring = CreateLinearRing(factory, dim, elemInfo, i, coords);
 
                     if (Algorithm.Orientation.IsCCW(ring.CoordinateSequence))
                     {
@@ -492,7 +498,7 @@ namespace NetTopologySuite.IO
         }
 
 
-        private LinearRing CreateLinearRing(GeometryFactory factory, int dim, int lrs, double[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private LinearRing CreateLinearRing(GeometryFactory factory, int dim, double[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
 
             int sOffset = StartingOffset(elemInfo, elemIndex);
@@ -515,10 +521,9 @@ namespace NetTopologySuite.IO
             }
             LinearRing ring;
 
-            int len = (dim + lrs);
-            int start = (sOffset - 1) / len;
+            int start = (sOffset - 1) / dim;
             int eOffset = StartingOffset(elemInfo, elemIndex + 1); // -1 for end
-            int end = (eOffset != -1) ? ((eOffset - 1) / len) : coords.Count;
+            int end = (eOffset != -1) ? ((eOffset - 1) / dim) : coords.Count;
 
             if (interpretation == 1)
             {
@@ -544,7 +549,7 @@ namespace NetTopologySuite.IO
         }
 
 
-        private LineString CreateLine(GeometryFactory factory, int dim, int lrs, double[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private LineString CreateLine(GeometryFactory factory, int dim, double[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
 
             int sOffset = StartingOffset(elemInfo, elemIndex);
@@ -562,11 +567,9 @@ namespace NetTopologySuite.IO
                                          "( ELEM_INFO INTERPRETAION 1) is supported");
             }
 
-            int
-        len = (dim + lrs);
-            int start = (sOffset - 1) / len;
+            int start = (sOffset - 1) / dim;
             int eOffset = StartingOffset(elemInfo, elemIndex + 1); // -1 for end
-            int end = (eOffset != -1) ? ((eOffset - 1) / len) : coords.Count;
+            int end = (eOffset != -1) ? ((eOffset - 1) / dim) : coords.Count;
 
 
             var line = factory.CreateLineString(ToPointArray(SubList(coords, start, end)));
@@ -580,12 +583,12 @@ namespace NetTopologySuite.IO
         {
             var pts = new List<Coordinate>(input.Count);
             foreach (var point in input)
-                pts.Add(new CoordinateZ(point.X, point.Y, point.Z));
+                pts.Add(point.Copy());
 
             return pts.ToArray();
         }
 
-        private Point CreatePoint(GeometryFactory factory, int dim, int lrs, double[] elemInfo, int elemIndex, List<Coordinate> coords)
+        private Point CreatePoint(GeometryFactory factory, int dim, double[] elemInfo, int elemIndex, List<Coordinate> coords)
         {
             int sOffset = StartingOffset(elemInfo, elemIndex);
             var etype = EType(elemInfo, elemIndex);
