@@ -116,5 +116,36 @@ namespace NetTopologySuite.IO.Oracle.Test
             Assert.That(true);
         }
 
+        [Test]
+        public void TestIssue25()
+        {
+            // Create a reader
+            var reader = new OracleGeometryReader(NtsGeometryServices.Instance);
+
+            // MultiPoint 19c
+            var sdo19c = new Sdo.SdoGeometry
+            {
+                SdoGtype = 2005,
+                Sdo_Srid = 1,
+                Point = null,
+                ElemArray = new double[] { 1, 1, 1, 3, 1, 1, 5, 1, 1 },
+                OrdinatesArray = new double[] { 0, 0, 1, 1, 1, 0 }
+            };
+            var nts19c = reader.Read(sdo19c);
+
+            // MultiPoint 19c
+            var sdo23ai = new Sdo.SdoGeometry
+            {
+                SdoGtype = 2005,
+                Sdo_Srid = 1,
+                Point = null,
+                ElemArray = new double[] { 1, 1, 3 },
+                OrdinatesArray = new double[] { 0, 0, 1, 1, 1, 0 }
+            };
+            var nts23ai = reader.Read(sdo23ai);
+
+            Assert.That(nts19c.EqualsExact(nts23ai));
+        }
+
     }
 }

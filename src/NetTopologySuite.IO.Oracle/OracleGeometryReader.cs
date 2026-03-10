@@ -425,7 +425,8 @@ namespace NetTopologySuite.IO
 
             int start = (sOffset - 1) / dim;
 
-            int start = (sOffset - 1) / len;
+            // Adjust interpretation when not in a collection (required for Version <= 19c)
+            if (interpretation == 1 && !inCollection) interpretation = coords.Count;
             int end = start + interpretation;
 
             var points = factory.CreateMultiPointFromCoords(SubArray(coords, start, end));
