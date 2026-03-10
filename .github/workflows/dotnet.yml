@@ -32,10 +32,10 @@ jobs:
           
     steps:
     - uses: actions/checkout@v4
-    - name: Setup .NET 8
+    - name: Setup .NET 10
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8
+        dotnet-version: 10
         
     - name: Restore dependencies
       run: dotnet restore
@@ -63,10 +63,10 @@ jobs:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
 
     steps:
-    - name: Setup .NET 8
+    - name: Setup .NET 10
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8
+        dotnet-version: 10
 
     - name: Download Package Files
       uses: actions/download-artifact@v4
@@ -88,10 +88,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
 
     steps:
-    - name: Setup .NET 8
+    - name: Setup .NET 10
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8
+        dotnet-version: 10
 
     - name: Download Package Files
       uses: actions/download-artifact@v4
